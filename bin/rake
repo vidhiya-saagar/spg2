@@ -1,0 +1,4 @@
+#!/Users/dilraj/.rvm/rubies/ruby-3.2.1/bin/ruby
+require_relative "../config/boot"
+require "rake"
+Rake.application.run
