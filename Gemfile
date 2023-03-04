@@ -3,7 +3,7 @@
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby '2.7.0'
+ruby '3.2.1'
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem 'rails', '~> 7.0.4', '>= 7.0.4.2'
@@ -52,13 +52,13 @@ group :development, :test do
   gem 'debug', :platforms => %i[mri mingw x64_mingw]
 end
 
+gem 'rubocop'
+gem 'rubocop-capybara'
+gem 'rubocop-rails'
+
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem 'web-console'
-
-  gem 'rubocop', :require => false
-  gem 'rubocop-capybara', :require => false
-  gem 'rubocop-rails', :require => false
 end
 
 group :test do

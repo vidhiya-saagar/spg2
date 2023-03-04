@@ -9,6 +9,10 @@ Style/Documentation:
 Style/HashSyntax:
   EnforcedStyle: hash_rockets
 
+Style/RedundantReturn:
+  Enabled: false
+
 AllCops:
+  NewCops: enable
   Exclude:
     - db/schema.rb
