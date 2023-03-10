@@ -4,7 +4,7 @@ require:
   - rubocop-capybara
 
 AllCops:
-  TargetRubyVersion: 3.2.1
+  NewCops: enable
   Exclude:
     - db/schema.rb
     - config/**/*
@@ -46,10 +46,6 @@ Metrics/ModuleLength:
 
 Metrics/AbcSize:
   Enabled: false
-
-Metrics/BlockLength:
-  Exclude:
-    - "spec/**/*.rb"
 
 Style/Alias:
   Enabled: false
