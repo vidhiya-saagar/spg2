@@ -1,0 +1,91 @@
+# .rubocop.yml
+require:
+  - rubocop-rails
+  - rubocop-capybara
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - db/schema.rb
+    - config/**/*
+
+Bundler/DuplicatedGem:
+  Enabled: false
+
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: key
+  EnforcedLastArgumentHashStyle: ignore_implicit
+
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+  IndentationWidth: 2
+
+Layout/BlockEndNewline:
+  Enabled: false
+
+Layout/EmptyLinesAroundBeginBody:
+  Enabled: false
+
+Layout/IndentationWidth:
+  Width: 2
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/LineLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Style/Alias:
+  Enabled: false
+  EnforcedStyle: prefer_alias_method
+
+Style/Documentation:
+  Enabled: false
+
+Style/EachWithObject:
+  Enabled: false
+
+Style/HashSyntax:
+  Enabled: true
+  EnforcedStyle: hash_rockets
+
+Style/MultilineTernaryOperator:
+  Enabled: false
+
+Style/RedundantReturn:
+  Enabled: false
+
+Style/RedundantSelf:
+  Enabled: false
+
+Style/RescueModifier:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+  EnforcedStyle: brackets
+
+Style/UnpackFirst:
+  Enabled: false
+
+# Default is special_inside_parentheses
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+Style/WordArray:
+  EnforcedStyle: brackets
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
