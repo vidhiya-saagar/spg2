@@ -14,6 +14,7 @@ class CreateChapters < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
+
     add_index :chapters, [:book_id, :number], :unique => true
   end
 end

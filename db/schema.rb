@@ -34,6 +34,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_11_033148) do
     t.text "artwork_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["book_id", "number"], name: "index_chapters_on_book_id_and_number", unique: true
     t.index ["book_id"], name: "index_chapters_on_book_id"
   end
 
