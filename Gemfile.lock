@@ -209,6 +209,9 @@ GEM
       activesupport (>= 4.2.0)
       rack (>= 1.1)
       rubocop (>= 1.33.0, < 2.0)
+    rubocop-rspec (2.19.0)
+      rubocop (~> 1.33)
+      rubocop-capybara (~> 2.17)
     ruby-progressbar (1.12.0)
     rubyzip (2.3.2)
     selenium-webdriver (4.8.1)
@@ -269,6 +272,7 @@ DEPENDENCIES
   rubocop
   rubocop-capybara
   rubocop-rails
+  rubocop-rspec
   selenium-webdriver
   sprockets-rails
   sqlite3 (~> 1.4)

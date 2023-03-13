@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe 'Chapter' do
-  context 'Missing fields`' do
+  context 'with missing fields`' do
     let(:unrequired_chapter_fields) do
       {
         :en_title => '',
