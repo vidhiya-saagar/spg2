@@ -20,6 +20,8 @@ jobs:
         run: |
           gem install bundler
           bundle install
+      - name: Set up database schema
+        run: bin/rails db:schema:load
       - name: Run Rubocop
         run: bundle exec rubocop
       - name: Rspec
