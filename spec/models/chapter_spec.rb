@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Chapter' do
@@ -34,13 +36,13 @@ RSpec.describe 'Chapter' do
     let(:book1) { FactoryBot.create(:book, :sequence => 1) }
     let(:book2) { FactoryBot.create(:book, :sequence => 2) }
 
-      it 'allows creation of duplicate chapter 1s, if they are for different books' do
-        chapter1_book1 = FactoryBot.create(:chapter, :book => book1, :number => 1)
-        chapter1_book2 = FactoryBot.create(:chapter, :book => book2, :number => 1)
+    it 'allows creation of duplicate chapter 1s, if they are for different books' do
+      chapter1_book1 = FactoryBot.create(:chapter, :book => book1, :number => 1)
+      chapter1_book2 = FactoryBot.create(:chapter, :book => book2, :number => 1)
 
-        expect(chapter1_book1).to be_valid
-        expect(chapter1_book2).to be_valid
-      end
+      expect(chapter1_book1).to be_valid
+      expect(chapter1_book2).to be_valid
+    end
 
     it 'cannot save books with with duplicate chapter `number`s' do
       FactoryBot.create(:chapter, :book => book1, :number => 1)
