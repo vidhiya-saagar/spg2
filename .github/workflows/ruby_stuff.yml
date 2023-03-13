@@ -22,3 +22,7 @@ jobs:
           bundle install
       - name: Run Rubocop
         run: bundle exec rubocop
+      - name: Rspec
+        run: |
+          sudo apt-get install -y sqlite3 libsqlite3-dev
+          bundle exec rspec
