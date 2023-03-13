@@ -65,6 +65,7 @@ group :development do
   gem 'rubocop'
   gem 'rubocop-capybara'
   gem 'rubocop-rails'
+  gem 'rubocop-rspec', :require => false
 end
 
 group :test do
