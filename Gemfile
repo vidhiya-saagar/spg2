@@ -53,6 +53,8 @@ group :development, :test do
 
   # Reading this guide: https://github.com/rspec/rspec-rails/tree/6-0-maintenance
   gem 'rspec-rails', '~> 6.0.0'
+  # Reading this guide: https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md
+  gem 'factory_bot_rails'
 end
 
 group :development do
