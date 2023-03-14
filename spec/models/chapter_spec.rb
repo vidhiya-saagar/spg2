@@ -38,7 +38,7 @@ RSpec.describe 'Chapter' do
 
     it 'saves for different books' do
       create(:chapter, :book => book1, :number => 1)
-      expect { create(:chapter, :book => book2, :number => 1) }.to be_valid
+      expect(create(:chapter, :book => book2, :number => 1)).to be_truthy
     end
 
     it 'cannot save for same book' do
