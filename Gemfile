@@ -50,6 +50,9 @@ gem 'bootsnap', :require => false
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', :platforms => %i[mri mingw x64_mingw]
+
+  # Reading this guide: https://github.com/rspec/rspec-rails/tree/6-0-maintenance
+  gem 'rspec-rails', '~> 6.0.0'
 end
 
 group :development do
@@ -60,6 +63,7 @@ group :development do
   gem 'rubocop'
   gem 'rubocop-capybara'
   gem 'rubocop-rails'
+  gem 'rubocop-rspec', :require => false
 end
 
 group :test do

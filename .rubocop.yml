@@ -1,5 +1,6 @@
 # .rubocop.yml
 require:
+  - rubocop-rspec
   - rubocop-rails
   - rubocop-capybara
 
@@ -46,6 +47,10 @@ Metrics/ModuleLength:
 
 Metrics/AbcSize:
   Enabled: false
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*.rb"
 
 Style/Alias:
   Enabled: false
