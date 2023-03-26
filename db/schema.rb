@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_03_11_033148) do
+ActiveRecord::Schema[7.0].define(version: 2023_03_26_064945) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -38,5 +38,25 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_11_033148) do
     t.index ["book_id"], name: "index_chapters_on_book_id"
   end
 
+  create_table "chhand_types", force: :cascade do |t|
+    t.string "chhand_name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "chhands", force: :cascade do |t|
+    t.integer "chapter_id", null: false
+    t.string "chhand_type"
+    t.string "en_chhand_type"
+    t.integer "chhand_type_id", null: false
+    t.string "vaak"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chapter_id"], name: "index_chhands_on_chapter_id"
+    t.index ["chhand_type_id"], name: "index_chhands_on_chhand_type_id"
+  end
+
   add_foreign_key "chapters", "books"
+  add_foreign_key "chhands", "chapters"
+  add_foreign_key "chhands", "chhand_types"
 end
