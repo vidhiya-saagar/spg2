@@ -39,15 +39,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_03_26_064945) do
   end
 
   create_table "chhand_types", force: :cascade do |t|
-    t.string "chhand_name"
+    t.string "name", null: false
+    t.string "en_name"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "chhands", force: :cascade do |t|
     t.integer "chapter_id", null: false
-    t.string "chhand_type"
-    t.string "en_chhand_type"
     t.integer "chhand_type_id", null: false
     t.string "vaak"
     t.datetime "created_at", null: false
