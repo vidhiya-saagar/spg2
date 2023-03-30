@@ -2,4 +2,5 @@
 
 class Chapter < ApplicationRecord
   belongs_to :book
+  has_many :chhands, :dependent => :destroy
 end
