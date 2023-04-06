@@ -1,0 +1,2 @@
+class PauriTranslation < ApplicationRecord
+end
