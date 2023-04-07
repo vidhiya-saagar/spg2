@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_07_102145) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_07_141941) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -75,10 +75,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_07_102145) do
     t.index ["chhand_id"], name: "index_pauris_on_chhand_id"
   end
 
+  create_table "tuks", force: :cascade do |t|
+    t.integer "chapter_id", null: false
+    t.integer "pauri_id", null: false
+    t.integer "sequence", null: false
+    t.string "content", null: false
+    t.string "original_content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chapter_id"], name: "index_tuks_on_chapter_id"
+    t.index ["pauri_id"], name: "index_tuks_on_pauri_id"
+  end
+
   add_foreign_key "chapters", "books"
   add_foreign_key "chhands", "chapters"
   add_foreign_key "chhands", "chhand_types"
   add_foreign_key "pauri_translations", "pauris"
   add_foreign_key "pauris", "chapters"
   add_foreign_key "pauris", "chhands"
+  add_foreign_key "tuks", "chapters"
+  add_foreign_key "tuks", "pauris"
 end
