@@ -97,3 +97,6 @@ Layout/EmptyLineAfterGuardClause:
 
 RSpec/ExpectChange:
   Enabled: false
+
+RSpec/DescribedClass:
+  Enabled: false
