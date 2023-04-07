@@ -94,3 +94,9 @@ Style/WordArray:
 
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
+
+RSpec/ExpectChange:
+  Enabled: false
+
+RSpec/DescribedClass:
+  Enabled: false
