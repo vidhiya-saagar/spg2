@@ -2,6 +2,8 @@
 
 FactoryBot.define do
   factory :pauri_translation do
-    # TODO: Add `pauri_translation` factory
+    en_translation { 'In this pauri...' }
+    en_translator { 'SikhTranslations' }
+    association :pauri, :factory => :pauri
   end
 end

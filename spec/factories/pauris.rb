@@ -2,6 +2,8 @@
 
 FactoryBot.define do
   factory :pauri do
-    # TODO: Add `pauri` factory
+    number { rand(1..100) }
+    association :chapter, :factory => :chapter
+    association :chhand, :factory => :chhand
   end
 end
