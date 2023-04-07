@@ -24,6 +24,5 @@
 /app/assets/builds/*
 !/app/assets/builds/.keep
 
-.vscode
 .trunk
 .env

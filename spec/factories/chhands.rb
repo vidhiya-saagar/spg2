@@ -2,6 +2,7 @@
 
 FactoryBot.define do
   factory :chhand do
-    # TODO: Add `chhand` factory
+    association :chhand_type
+    association :chapter
   end
 end
