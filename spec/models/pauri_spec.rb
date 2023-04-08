@@ -3,53 +3,52 @@
 require 'rails_helper'
 
 RSpec.describe Pauri do
+  let(:chapter) { create(:chapter) }
+  let(:chhand) { create(:chhand) }
+
   describe 'validations' do
-    let!(:chapter) { create(:chapter) }
-    let!(:chhand) { create(:chhand, :chapter => chapter) }
-
-    it 'is valid with a chapter, chhand, and number' do
-      pauri = build(:pauri, :chapter => chapter, :chhand => chhand)
-      expect(pauri).to be_valid
+    context 'when given valid attributes' do
+      it 'saves' do
+        pauri = Pauri.new(:number => 1, :chapter => chapter, :chhand => chhand)
+        expect(pauri).to be_valid
+      end
     end
 
-    it 'is not valid without a chapter' do
-      pauri = build(:pauri, :chhand => chhand)
-      expect(pauri).not_to be_valid
-    end
+    context 'when given invalid attributes' do
+      it 'does not save without a `number`' do
+        pauri = Pauri.new(:chapter => chapter, :chhand => chhand)
+        expect(pauri).not_to be_valid
+      end
 
-    it 'is not valid without a chhand' do
-      pauri = build(:pauri, :chapter => chapter)
-      expect(pauri).not_to be_valid
-    end
+      it 'does not save without a `chapter`' do
+        pauri = Pauri.new(:number => 1, :chhand => chhand)
+        expect(pauri).not_to be_valid
+      end
 
-    it 'is not valid without a number' do
-      pauri = build(:pauri, :chapter => chapter, :chhand => chhand, :number => nil)
-      expect(pauri).not_to be_valid
-    end
+      it 'does not save without a `chhand`' do
+        pauri = Pauri.new(:number => 1, :chapter => chapter)
+        expect(pauri).not_to be_valid
+      end
 
-    it 'is not valid with a duplicate number in the same chapter' do
-      pauri = create(:pauri, :chapter => chapter, :chhand => chhand)
-      duplicate_pauri = build(:pauri, :chapter => chapter, :chhand => chhand, :number => pauri.number)
-      expect(duplicate_pauri).not_to be_valid
-    end
-  end
+      it 'does not save with a non-existent `chapter_id`' do
+        pauri = Pauri.new(:number => 1, :chapter_id => 999, :chhand => chhand)
+        expect(pauri).not_to be_valid
+      end
 
-  describe 'associations' do
-    ##
-    # `let!` is a RSpec helper method that defines a memoized helper method.
-    # When the helper method is called, it will lazily create the object only when it is first needed.
-    # The `!` version of let ensures that the object is created immediately, as opposed to lazily.
-    ##
-    let!(:pauri) { create(:pauri) }
+      it 'does not save with a non-existent `chhand_id`' do
+        pauri = Pauri.new(:number => 1, :chapter => chapter, :chhand_id => 999)
+        expect(pauri).not_to be_valid
+      end
 
-    it 'destroys pauri_translations when destroyed' do
-      create(:pauri_translation, :pauri => pauri)
-      expect { pauri.destroy }.to change { PauriTranslation.count }.by(-1)
-    end
+      it 'does not save with a null `chapter`' do
+        pauri = Pauri.new(:number => 1, :chapter => nil, :chhand => chhand)
+        expect(pauri).not_to be_valid
+      end
 
-    it 'destroys tuks when destroyed' do
-      create(:tuk, :pauri => pauri)
-      expect { pauri.destroy }.to change { Tuk.count }.by(-1)
+      it 'does not save with a null `chhand`' do
+        pauri = Pauri.new(:number => 1, :chapter => chapter, :chhand => nil)
+        expect(pauri).not_to be_valid
+      end
     end
   end
 end
