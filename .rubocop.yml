@@ -103,3 +103,6 @@ RSpec/DescribedClass:
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
+
+Rails/NotNullColumn:
+  Enabled: false

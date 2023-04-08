@@ -2,5 +2,5 @@
 
 class Pauri < ApplicationRecord
   belongs_to :chapter
-  has_one :translation, :class_name => 'pauri_translation', :dependent => :destroy
+  has_one :translation, :class_name => 'PauriTranslation', :dependent => :destroy
 end
