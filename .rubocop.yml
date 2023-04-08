@@ -100,3 +100,6 @@ RSpec/ExpectChange:
 
 RSpec/DescribedClass:
   Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false

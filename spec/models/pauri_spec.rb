@@ -50,13 +50,13 @@ RSpec.describe Pauri do
         expect(pauri).not_to be_valid
       end
 
-      it 'does not save if the pauri number is 0' do
+      it 'does not save if the `number` is 0' do
         pauri = Pauri.new(:number => 0, :chapter => chapter, :chhand => chhand)
         expect(pauri).not_to be_valid
       end
 
-      it 'does not save if there is already a pauri with the same number that belongs to the same chapter' do
-        existing_pauri = create(:pauri, :number => 1, :chapter => chapter, :chhand => chhand)
+      it 'does not save if there is already a `pauri` with the same `number` that belongs to the same `chapter`' do
+        create(:pauri, :number => 1, :chapter => chapter, :chhand => chhand) # Existing `Pauri`
         new_pauri = Pauri.new(:number => 1, :chapter => chapter, :chhand => chhand)
         expect(new_pauri).not_to be_valid
       end
@@ -68,7 +68,7 @@ RSpec.describe Pauri do
       let!(:tuk) { create(:tuk, :chapter => chapter, :pauri => pauri) }
       let!(:tuk_translation) { create(:tuk_translation, :tuk => tuk) }
 
-      it 'destroys the associated PauriTranslations, Tuks, and TukTranslations when destroyed' do
+      it 'destroys the associated `PauriTranslation`, `Tuk`, `TukTranslation` upon destroy', :aggregate_failures do
         pauri.destroy!
 
         expect(PauriTranslation.find_by(:id => pauri_translation.id)).to be_nil
@@ -82,17 +82,17 @@ RSpec.describe Pauri do
     let!(:pauri) { create(:pauri, :chapter => chapter, :chhand => chhand) }
     let!(:other_pauri) { create(:pauri, :number => 2, :chapter => chapter, :chhand => chhand) }
 
-    it 'updating a valid pauri to giving it a null `chapter` should fail' do
+    it '`pauri.chapter` to null should fail' do
       pauri.chapter = nil
       expect(pauri).not_to be_valid
     end
 
-    it 'updating a valid pauri to giving it a null `chhand` should fail' do
+    it '`pauri.chhand` to null should fail' do
       pauri.chhand = nil
       expect(pauri).not_to be_valid
     end
 
-    it "updating a valid pauri's number to another number that already has that number within the same chapter should fail" do
+    it 'updating `pauri.number` to one that already exists within the `chapter` should fail' do
       pauri.number = other_pauri.number
       expect(pauri).not_to be_valid
     end
