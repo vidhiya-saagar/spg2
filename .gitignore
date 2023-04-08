@@ -26,3 +26,4 @@
 
 .trunk
 .env
+.DS_STORE
