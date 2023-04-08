@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_07_143116) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_08_200625) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -94,6 +94,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_07_143116) do
     t.datetime "updated_at", null: false
     t.index ["chapter_id"], name: "index_tuks_on_chapter_id"
     t.index ["pauri_id"], name: "index_tuks_on_pauri_id"
+    t.index ["sequence", "pauri_id"], name: "index_tuks_on_sequence_and_pauri_id", unique: true
   end
 
   add_foreign_key "chapters", "books"

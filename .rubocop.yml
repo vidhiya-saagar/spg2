@@ -103,3 +103,6 @@ RSpec/DescribedClass:
 
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
