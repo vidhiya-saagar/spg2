@@ -3,8 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe Chhand do
-  let(:chhand_type) { create(:chhand_type) }
-  let(:chapter) { create(:chapter) }
+  let!(:chhand_type) { create(:chhand_type) }
+  let!(:chapter) { create(:chapter) }
 
   describe 'validations' do
     context 'when given valid attributes' do
@@ -51,8 +51,8 @@ RSpec.describe Chhand do
       end
 
       it 'does not save the `Chhand` with a duplicate `sequence` within the same `chapter`' do
-        create(:chhand, :chapter => chapter, :sequence => 1)
-        chhand = Chhand.new(:chhand_type => chhand_type, :chapter => chapter, :vaak => 'Example vaak', :sequence => 1)
+        create(:chhand, :chhand_type => chhand_type, :chapter => chapter, :sequence => 1)
+        chhand = Chhand.new(:chhand_type => chhand_type, :chapter => chapter, :sequence => 1)
         expect(chhand).not_to be_valid
       end
     end
