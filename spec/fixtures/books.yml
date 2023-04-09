@@ -1,0 +1,132 @@
+# All 22 Books - Needed for the test database
+sri_nanak_parkash_1:
+  id: 1
+  sequence: 1
+  title: ਸ੍ਰੀ ਨਾਨਕ ਪ੍ਰਕਾਸ਼ ਪੂਰਬਾਰਧ
+  en_title: Sri Nanak Parkash 1
+
+sri_nanak_parkash_2:
+  id: 2
+  sequence: 2
+  title: ਸ੍ਰੀ ਨਾਨਕ ਪ੍ਰਕਾਸ਼ ਉੱੱਤਰਾਰਧ
+  en_title: Sri Nanak Parkash 2
+
+raas_1:
+  id: 3
+  sequence: 3
+  title: ਰਾਸਿ ੧
+  en_title: Raas 1
+
+raas_2:
+  id: 4
+  sequence: 4
+  title: ਰਾਸਿ ੨
+  en_title: Raas 2
+
+raas_3:
+  id: 5
+  sequence: 5
+  title: ਰਾਸਿ ੩
+  en_title: Raas 3
+
+raas_4:
+  id: 6
+  sequence: 6
+  title: ਰਾਸਿ ੪
+  en_title: Raas 4
+
+raas_5:
+  id: 7
+  sequence: 7
+  title: ਰਾਸਿ ੫
+  en_title: Raas 5
+
+raas_6:
+  id: 8
+  sequence: 8
+  title: ਰਾਸਿ ੬
+  en_title: Raas 6
+
+raas_7:
+  id: 9
+  sequence: 9
+  title: ਰਾਸਿ ੭
+  en_title: Raas 7
+
+raas_8:
+  id: 10
+  sequence: 10
+  title: ਰਾਸਿ ੮
+  en_title: Raas 8
+
+raas_9:
+  id: 11
+  sequence: 11
+  title: ਰਾਸਿ ੯
+  en_title: Raas 9
+
+raas_10:
+  id: 12
+  sequence: 12
+  title: ਰਾਸਿ ੧੦
+  en_title: Raas 10
+
+raas_11:
+  id: 13
+  sequence: 13
+  title: ਰਾਸਿ ੧੧
+  en_title: Raas 11
+
+raas_12:
+  id: 14
+  sequence: 14
+  title: ਰਾਸਿ ੧੨
+  en_title: Raas 12
+
+rut_1:
+  id: 15
+  sequence: 15
+  title: ਰੁਤਿ ੧
+  en_title: Rut 1
+
+rut_2:
+  id: 16
+  sequence: 16
+  title: ਰੁਤਿ ੨
+  en_title: Rut 2
+
+rut_3:
+  id: 17
+  sequence: 17
+  title: ਰੁਤਿ ੩
+  en_title: Rut 3
+
+rut_4:
+  id: 18
+  sequence: 18
+  title: ਰੁਤਿ ੪
+  en_title: Rut 4
+
+rut_5:
+  id: 19
+  sequence: 19
+  title: ਰੁਤਿ ੫
+  en_title: Rut 5
+
+rut_6:
+  id: 20
+  sequence: 20
+  title: ਰੁਤਿ ੬
+  en_title: Rut 6
+
+ayaan_1:
+  id: 21
+  sequence: 21
+  title: ਅਯਨ ੧
+  en_title: Ayaan 1
+
+ayaan_2:
+  id: 22
+  sequence: 22
+  title: ਅਯਨ ੨
+  en_title: Ayaan 2
