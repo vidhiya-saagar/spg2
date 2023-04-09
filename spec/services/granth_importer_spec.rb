@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable RSpec/MultipleExpectations
+
 require 'rails_helper'
 
 RSpec.describe GranthImporter, :type => :model do

@@ -18,12 +18,12 @@ class GranthImporter
       chhand_name = row['Chhand_Type'].try(:strip)
       tuk = row['Tuk'].try(:strip)
       pauri_number = row['Pauri_Number'].try(:to_i)
-      footnotes = row['Footnotes'].try(:strip)
-      extended_ref = row['Extended_Ref'].try(:strip)
-      extended_meaning = row['Extended_Meaning'].try(:strip)
-      translation_en = row['Translation_EN'].try(:strip)
 
-      Rails.logger.debug { "Processing #{book_name} - #{chapter_name} - #{chhand_name} - #{pauri_number} - #{tuk}" }
+      # TODO: When ready, we can import these fields as well!
+      # footnotes = row['Footnotes'].try(:strip)
+      # extended_ref = row['Extended_Ref'].try(:strip)
+      # extended_meaning = row['Extended_Meaning'].try(:strip)
+      # translation_en = row['Translation_EN'].try(:strip)
 
       # BOOK
       @book = Book.find_by(:en_title => book_name)

@@ -109,3 +109,6 @@ Layout/MultilineMethodCallIndentation:
 
 Rails/NotNullColumn:
   Enabled: false
+
+Lint/MissingCopEnableDirective:
+  Enabled: false
