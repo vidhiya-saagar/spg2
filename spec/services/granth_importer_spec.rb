@@ -49,14 +49,14 @@ RSpec.describe GranthImporter, :type => :model do
     describe 'tuks' do
       let(:pauri) { Pauri.find_by(:number => 1, :chhand_id => 1) }
 
-      it 'creates the first tuk with correct sequence, content, and chapter' do
+      it 'creates the first `tuk` with correct `sequence` and `content`' do
         tuk1 = Tuk.find_by(:sequence => 1, :pauri => pauri)
         expect(tuk1).not_to be_nil
         expect(tuk1.content).to eq('ਏਕੁੰਕਾਰਾ ਸਤਿਗੁਰੂ ਤਿਹਿ ਪ੍ਰਸਾਦਿ ਸਚੁ ਹੋਇ')
         expect(tuk1.pauri.chhand.chapter.number).to eq(1)
       end
 
-      it 'creates the second tuk with correct sequence, content, and chapter' do
+      it 'creates the second `tuk` with correct `sequence` and content' do
         tuk2 = Tuk.find_by(:sequence => 2, :pauri => pauri)
         expect(tuk2).not_to be_nil
         expect(tuk2.content).to eq('ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤੇ ਵਿਘਨ ਵਿਨਾਸ਼ਨ ਸੋਇ')
