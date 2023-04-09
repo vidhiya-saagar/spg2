@@ -4,5 +4,6 @@ FactoryBot.define do
   factory :chhand do
     association :chhand_type
     association :chapter
+    add_attribute(:sequence) { '1' }
   end
 end

@@ -106,3 +106,6 @@ RSpec/MultipleMemoizedHelpers:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+
+Rails/NotNullColumn:
+  Enabled: false

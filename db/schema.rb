@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_08_200625) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_08_210406) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -52,6 +52,8 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_200625) do
     t.string "vaak"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sequence", null: false
+    t.index ["chapter_id", "sequence"], name: "index_chhands_on_chapter_id_and_sequence", unique: true
     t.index ["chapter_id"], name: "index_chhands_on_chapter_id"
     t.index ["chhand_type_id"], name: "index_chhands_on_chhand_type_id"
   end

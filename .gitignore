@@ -27,3 +27,5 @@
 .trunk
 .env
 .DS_STORE
+
+lib/assets/*.csv
