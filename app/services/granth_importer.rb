@@ -9,6 +9,44 @@ class GranthImporter
     @blob = CSV.parse(csv_file, :headers => true)
   end
 
+  def execute
+    @blob.each do |row|
+      # ALL FIELDS
+      book_name = row['Book_Name'].try(:strip)
+      chapter_name = row['Chapter_Name'].try(:strip)
+      chapter_number = row['Chapter_Number'].try(:to_i)
+      chhand_name = row['Chhand_Type'].try(:strip)
+      tuk = row['Tuk'].try(:strip)
+      pauri_number = row['Pauri_Number'].try(:to_i)
+      footnotes = row['Footnotes'].try(:strip)
+      extended_ref = row['Extended_Ref'].try(:strip)
+      extended_meaning = row['Extended_Meaning'].try(:strip)
+      translation_en = row['Translation_EN'].try(:strip)
+
+      Rails.logger.debug { "Processing #{book_name} - #{chapter_name} - #{chhand_name} - #{pauri_number} - #{tuk}" }
+
+      # BOOK
+      @book = Book.find_by(:en_title => book_name)
+
+      # CHAPTER
+      create_chapter(chapter_name, chapter_number) if new_chapter?(chapter_number)
+
+      # CHHAND_TYPE
+      @chhand_type = ChhandType.find_or_create_by(:name => chhand_name)
+
+      # CHHAND
+      create_chhand if new_chhand?(chhand_name)
+
+      # PAURI
+      create_pauri(pauri_number) if new_pauri?(pauri_number)
+
+      # TUKS
+      create_tuk(tuk)
+    end
+  end
+
+  private
+
   def create_chapter(chapter_name, chapter_number)
     @book.chapters.create(:title => chapter_name, :number => chapter_number)
   end
