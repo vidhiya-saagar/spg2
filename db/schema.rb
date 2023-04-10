@@ -58,6 +58,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_210406) do
     t.index ["chhand_type_id"], name: "index_chhands_on_chhand_type_id"
   end
 
+  create_table "external_pauris", force: :cascade do |t|
+    t.integer "pauri_id", null: false
+    t.text "content", null: false
+    t.text "original_content"
+    t.text "bhai_vir_singh_footnote"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pauri_id"], name: "index_external_pauris_on_pauri_id"
+  end
+
   create_table "pauri_translations", force: :cascade do |t|
     t.string "en_translation"
     t.string "en_translator"
