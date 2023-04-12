@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_08_210406) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_10_215505) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -58,6 +58,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_210406) do
     t.index ["chhand_type_id"], name: "index_chhands_on_chhand_type_id"
   end
 
+  create_table "external_pauris", force: :cascade do |t|
+    t.integer "pauri_id", null: false
+    t.text "content", null: false
+    t.text "original_content"
+    t.text "bhai_vir_singh_footnote"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pauri_id"], name: "index_external_pauris_on_pauri_id"
+  end
+
   create_table "pauri_translations", force: :cascade do |t|
     t.string "en_translation"
     t.string "en_translator"
@@ -75,6 +85,16 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_210406) do
     t.datetime "updated_at", null: false
     t.index ["chapter_id"], name: "index_pauris_on_chapter_id"
     t.index ["chhand_id"], name: "index_pauris_on_chhand_id"
+  end
+
+  create_table "tuk_footnotes", force: :cascade do |t|
+    t.integer "tuk_id", null: false
+    t.text "bhai_vir_singh_footnote"
+    t.string "contentful_entry_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["contentful_entry_id"], name: "index_tuk_footnotes_on_contentful_entry_id", unique: true
+    t.index ["tuk_id"], name: "index_tuk_footnotes_on_tuk_id"
   end
 
   create_table "tuk_translations", force: :cascade do |t|
@@ -102,9 +122,11 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_08_210406) do
   add_foreign_key "chapters", "books"
   add_foreign_key "chhands", "chapters"
   add_foreign_key "chhands", "chhand_types"
+  add_foreign_key "external_pauris", "pauris"
   add_foreign_key "pauri_translations", "pauris"
   add_foreign_key "pauris", "chapters"
   add_foreign_key "pauris", "chhands"
+  add_foreign_key "tuk_footnotes", "tuks"
   add_foreign_key "tuk_translations", "tuks"
   add_foreign_key "tuks", "chapters"
   add_foreign_key "tuks", "pauris"
