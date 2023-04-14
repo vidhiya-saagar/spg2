@@ -78,7 +78,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_215505) do
   end
 
   create_table "pauris", force: :cascade do |t|
-    t.integer "number"
+    t.integer "number", null: false
     t.integer "chapter_id", null: false
     t.integer "chhand_id", null: false
     t.datetime "created_at", null: false
