@@ -7,5 +7,5 @@ class Pauri < ApplicationRecord
   has_one :external_pauri, :dependent => :destroy
   has_many :tuks, :dependent => :destroy
 
-  validates: number, uniqueness: { scope: :chapter_id, message: "Should be unique within a chapter" }
+  validates :number, :uniqueness => { :scope => :chapter_id }
 end
