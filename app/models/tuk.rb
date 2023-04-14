@@ -4,6 +4,7 @@ class Tuk < ApplicationRecord
   belongs_to :chapter
   belongs_to :pauri
   has_one :translation, :class_name => 'TukTranslation', :dependent => :destroy
+  has_one :footnote, :class_name => 'TukFootnote', :dependent => :destroy
 
   validates :sequence, :presence => true
   validates :content, :presence => true
