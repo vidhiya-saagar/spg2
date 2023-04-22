@@ -8,4 +8,6 @@ class Pauri < ApplicationRecord
   has_many :tuks, :dependent => :destroy
 
   validates :number, :uniqueness => { :scope => :chapter_id }
+  validates :number, :presence => true
+  validates :number, :numericality => { :greater_than => 0 }
 end
