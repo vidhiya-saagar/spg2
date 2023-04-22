@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_04_10_215505) do
+ActiveRecord::Schema[7.0].define(version: 2023_04_14_160208) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -78,13 +78,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_04_10_215505) do
   end
 
   create_table "pauris", force: :cascade do |t|
-    t.integer "number"
+    t.integer "number", null: false
     t.integer "chapter_id", null: false
     t.integer "chhand_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["chapter_id"], name: "index_pauris_on_chapter_id"
     t.index ["chhand_id"], name: "index_pauris_on_chhand_id"
+    t.index ["number", "chapter_id"], name: "index_pauris_on_number_and_chapter_id", unique: true
   end
 
   create_table "tuk_footnotes", force: :cascade do |t|
