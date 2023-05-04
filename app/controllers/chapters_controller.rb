@@ -1,0 +1,14 @@
+# frozen_string_literal: true
+
+class ChaptersController < ApplicationController
+  def index
+    @book = Book.find(params[:book_id])
+    @chapters = @book.chapters
+    render :json => @chapters
+  end
+
+  def show
+    @chapter = Chapter.find(params[:id])
+    render :json => @chapter
+  end
+end
