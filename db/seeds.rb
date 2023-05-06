@@ -309,9 +309,7 @@ TukFootnote.create!(
     },
     {
       :id => 2,
-      :tuk => Tuk.find_by(:id => 2),
-      :bhai_vir_singh_footnote => 'footnote2',
-      :contentful_entry_id => 'entryid2'
+      :tuk => Tuk.find_by(:id => 2)
     }
   ]
 )

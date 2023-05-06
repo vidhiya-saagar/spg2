@@ -21,7 +21,11 @@ json.chapter do
       json.tuks pauri.tuks.order(:sequence => :ASC) do |tuk|
         json.call(tuk, :id, :sequence, :content, :original_content, :translation)
         json.footnote do
-          json.call(tuk.footnote, :bhai_vir_singh_footnote, :contentful_entry_id)
+          if tuk.footnote.bhai_vir_singh_footnote || tuk.footnote.contentful_entry_id
+            json.call(tuk.footnote, :bhai_vir_singh_footnote, :contentful_entry_id)
+          else
+            json.null!
+          end
         end
       end
     end
