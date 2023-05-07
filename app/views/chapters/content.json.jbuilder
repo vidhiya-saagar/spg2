@@ -12,7 +12,7 @@ json.chapter do
     json.call(chhand, :id, :sequence, :vaak)
     json.name(chhand.chhand_type.name)
 
-        # :pauris => {:id, :number, :translation}
+    # :pauris => {:id, :number, :translation}
     json.pauris chhand.pauris.order(:sequence => :ASC) do |pauri|
       json.call(pauri, :id, :number, :translation)
       json.footnote do
