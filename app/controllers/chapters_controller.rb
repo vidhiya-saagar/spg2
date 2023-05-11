@@ -9,9 +9,5 @@ class ChaptersController < ApplicationController
 
   def show
     @chapter = Chapter.find(params[:id])
-
-    respond_to do |format|
-      format.json { render 'content', :formats => :json, :handlers => [:jbuilder], :status => :ok }
-    end
   end
 end

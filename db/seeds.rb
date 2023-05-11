@@ -313,3 +313,14 @@ TukFootnote.create!(
     }
   ]
 )
+
+PauriFootnote.create!(
+  [
+    {
+      :id => 1,
+      :pauri => Pauri.find_by(:id => 1),
+      :bhai_vir_singh_footnote => 'PauriFootnote1',
+      :contentful_entry_id => 'contentful entry id 1'
+    }
+  ]
+)

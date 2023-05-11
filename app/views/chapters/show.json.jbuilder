@@ -14,15 +14,33 @@ json.chapter do
 
     # :pauris => {:id, :number, :translation}
     json.pauris chhand.pauris.order(:sequence => :ASC) do |pauri|
-      json.call(pauri, :id, :number, :translation)
+      json.call(pauri, :id, :number)
+      json.translation do
+        if pauri.translation && (pauri.translation.en_translation || pauri.translation.en_translator)
+          json.call(pauri.translation, :en_translation, :en_translator)
+        else
+          json.null!
+        end
+      end
       json.footnote do
-        json.call(pauri.external_pauri, :bhai_vir_singh_footnote, :content, :original_content)
+        if pauri.footnote && (pauri.footnote.bhai_vir_singh_footnote || pauri.footnote.contentful_entry_id)
+          json.call(pauri.footnote, :bhai_vir_singh_footnote, :contentful_entry_id)
+        else
+          json.null!
+        end
       end
 
       json.tuks pauri.tuks.order(:sequence => :ASC) do |tuk|
-        json.call(tuk, :id, :sequence, :content, :original_content, :translation)
+        json.call(tuk, :id, :sequence, :content, :original_content)
+        json.translation do
+          if tuk.translation && (tuk.translation.en_translation || tuk.translation.en_translator)
+            json.call(tuk.translation, :en_translation, :en_translator)
+          else
+            json.null!
+          end
+        end
         json.footnote do
-          if tuk.footnote.bhai_vir_singh_footnote || tuk.footnote.contentful_entry_id
+          if tuk.footnote && (tuk.footnote.bhai_vir_singh_footnote || tuk.footnote.contentful_entry_id)
             json.call(tuk.footnote, :bhai_vir_singh_footnote, :contentful_entry_id)
           else
             json.null!
