@@ -51,7 +51,7 @@ Metrics/AbcSize:
 Metrics/BlockLength:
   Exclude:
     - "spec/**/*.rb"
-    - "app/views/chapters/show.json.jbuilder"
+    - "app/views/*/*.json.jbuilder"
 
 Style/Alias:
   Enabled: false
