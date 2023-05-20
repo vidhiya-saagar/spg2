@@ -145,3 +145,182 @@ Book.create!(
     }
   ]
 )
+
+Chapter.create!(
+  [
+    {
+      :id => 1,
+      :book => Book.find_by(:id => 1),
+      :number => 1,
+      :title => 'title1',
+      :en_title => 'title in english1',
+      :en_short_summary => 'short summary in english1',
+      :en_long_summary => 'long summary in english1',
+      :samapati => 'samapati1',
+      :en_samapati => 'samapati in english1',
+      :artwork_url => 'www.artworkURL1.com'
+    },
+    {
+      :id => 2,
+      :book => Book.find_by(:id => 2),
+      :number => 1,
+      :title => 'title2',
+      :en_title => 'title in english2',
+      :en_short_summary => 'short summary in english2',
+      :en_long_summary => 'long summary in english2',
+      :samapati => 'samapati2',
+      :en_samapati => 'samapati in english2',
+      :artwork_url => 'www.artworkURL2.com'
+    }
+  ]
+)
+
+ChhandType.create!(
+  [
+    {
+      :id => 1,
+      :name => 'type1',
+      :en_name => 'en_name'
+    },
+    {
+      :id => 2,
+      :name => 'type2'
+    }
+  ]
+)
+
+Chhand.create!(
+  [
+    {
+      :id => 1,
+      :sequence => 1,
+      :chapter => Chapter.find_by(:id => 1),
+      :chhand_type => ChhandType.find_by(:id => 2),
+      :vaak => 'vaak1'
+    },
+    {
+      :id => 2,
+      :sequence => 2,
+      :chapter => Chapter.find_by(:id => 1),
+      :chhand_type => ChhandType.find_by(:id => 1),
+      :vaak => 'vaak2'
+    }
+  ]
+)
+
+Pauri.create!(
+  [
+    {
+      :id => 1,
+      :number => 1,
+      :chapter => Chapter.find_by(:id => 1),
+      :chhand => Chhand.find_by(:id => 1)
+    },
+    {
+      :id => 2,
+      :number => 2,
+      :chapter => Chapter.find_by(:id => 1),
+      :chhand => Chhand.find_by(:id => 1)
+    }
+  ]
+)
+
+PauriTranslation.create!(
+  [
+    {
+      :id => 1,
+      :en_translation => 'translation1',
+      :en_translator => 'translator1',
+      :pauri => Pauri.find_by(:id => 1)
+    },
+    {
+      :id => 2,
+      :en_translation => 'translation2',
+      :en_translator => 'translator2',
+      :pauri => Pauri.find_by(:id => 2)
+    }
+  ]
+)
+
+Tuk.create!(
+  [
+    {
+      :id => 1,
+      :chapter => Chapter.find_by(:id => 1),
+      :pauri => Pauri.find_by(:id => 1),
+      :sequence => 1,
+      :content => 'content1',
+      :original_content => 'original content1'
+    },
+    {
+      :id => 2,
+      :chapter => Chapter.find_by(:id => 1),
+      :pauri => Pauri.find_by(:id => 1),
+      :sequence => 2,
+      :content => 'content2',
+      :original_content => 'original content2'
+    }
+  ]
+)
+
+TukTranslation.create!(
+  [
+    {
+      :id => 1,
+      :tuk => Tuk.find_by(:id => 1),
+      :en_translation => 'translation1',
+      :en_translator => 'translator1'
+    },
+    {
+      :id => 2,
+      :tuk => Tuk.find_by(:id => 2),
+      :en_translation => 'translation2',
+      :en_translator => 'translator2'
+    }
+  ]
+)
+
+ExternalPauri.create!(
+  [
+    {
+      :id => 1,
+      :pauri => Pauri.find_by(:id => 1),
+      :content => 'content1',
+      :original_content => 'original content1',
+      :bhai_vir_singh_footnote => 'footnote1'
+    },
+    {
+      :id => 2,
+      :pauri => Pauri.find_by(:id => 2),
+      :content => 'content2',
+      :original_content => 'original content2',
+      :bhai_vir_singh_footnote => 'footnote2'
+    }
+  ]
+)
+
+TukFootnote.create!(
+  [
+    {
+      :id => 1,
+      :tuk => Tuk.find_by(:id => 1),
+      :bhai_vir_singh_footnote => 'footnote1',
+      :contentful_entry_id => 'entryid1'
+    },
+    {
+      :id => 2,
+      :tuk => Tuk.find_by(:id => 2)
+    }
+  ]
+)
+
+PauriFootnote.create!(
+  [
+    {
+      :id => 1,
+      :pauri => Pauri.find_by(:id => 1),
+      :bhai_vir_singh_footnote => 'PauriFootnote1',
+      :contentful_entry_id => 'contentful entry id 1'
+    }
+  ]
+)
