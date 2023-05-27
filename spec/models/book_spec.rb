@@ -1,4 +1,5 @@
 require 'rails_helper'
+require 'csv'
 
 RSpec.describe Book, :type => :model do
   before do
@@ -23,13 +24,13 @@ RSpec.describe Book, :type => :model do
         allow(File).to receive(:exist?).with(file_name).and_return(true)
         allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
 
-        expect { @book.import_chapter(99) }.not_to raise_error
+        expect { @book.import_chapter(@chapter.number) }.not_to raise_error
       end
     end
 
     context 'when the chapter number specified in the CSV is NOT found' do
       it 'raises an error' do
-        file_name = "lib/imports/#{@book.sequence}/#{@chapter.number}.csv"
+        file_name = "lib/imports/#{@book.sequence}/99.csv"
         csv_content = <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
           99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
@@ -54,6 +55,11 @@ RSpec.describe Book, :type => :model do
 
         allow(File).to receive(:exist?).with(file_name).and_return(true)
         allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
+
+        prompt = instance_double(TTY::Prompt)
+        allow(TTY::Prompt).to receive(:new).and_return(prompt)
+        allow(prompt).to receive(:say)
+        allow(prompt).to receive(:yes?).and_return(true)
 
         expect { @book.import_chapter(99) }.not_to raise_error(RuntimeError, /Chapter not found/)
         @chapter99.destroy
@@ -83,12 +89,11 @@ RSpec.describe Book, :type => :model do
         allow(prompt).to receive(:say)
         allow(prompt).to receive(:yes?).and_return(true)
 
-        # allow(prompt).to receive(:say).with("The name in Book 1, Chapter 99 is presently 'Chapter'. The CSV says 'ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ'.", :color => :yellow)
-        # expect(prompt).to receive(:yes?).with("Do you want to continue and update this title to 'ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ'?").and_return(true)
-        # expect(prompt).to receive(:say).with(/The name in Book 1, Chapter 99 is presently 'Chapter'. The CSV says 'ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ'", color: :yellow)
 
         @book.import_chapter(99)
-        expect(@chapter99.reload.title).to eq('ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ । ਮੰਗਲ,ਦੋਹਰਾ')
+        expect(prompt).to have_received(:yes?).with("Do you want to continue and update this title to 'ਇਸ਼੍ਟ ਦੇਵ: ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ । ਮੰਗਲ'?")
+        expect(@chapter99.reload.title).to eq('ਇਸ਼੍ਟ ਦੇਵ: ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ । ਮੰਗਲ')
+      end
     end
 
     # context 'when the last row chapter number does not match' do
