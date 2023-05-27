@@ -51,7 +51,6 @@ class Book < ApplicationRecord
 
     ActiveRecord::Base.transaction do
       CSV.parse(file_path, :headers => true).each do |row|
-        puts "row is: #{row}"
         chapter_number = row['Chapter_Number'].to_i
         chapter_name = row['Chapter_Name'].try(:strip)
         chhand_type = row['Chhand_Type'].try(:strip)
@@ -67,15 +66,12 @@ class Book < ApplicationRecord
         @chapter = self.chapters.find_by(:number => chapter_number)
         raise "Chapter not found: #{chapter_number}" if @chapter.nil?
 
-        puts ' HEAD 30000'
         if @chapter.title != chapter_name
           message = "The name in Book #{sequence}, Chapter #{chapter_number} is " +
                     pastel.bold('presently') +
                     " '#{@chapter.title}'. The CSV says '#{chapter_name}'."
-          puts 'ER'
           prompt.say(message, :color => :yellow)
           answer = prompt.yes?("Do you want to continue and update this title to '#{chapter_name}'?")
-          puts 'DLFJSLDJF'
           raise 'Aborted by user' unless answer
           @chapter.update(:title => chapter_name)
           Rails.logger.debug pastel.green("✓ Chapter #{chapter_number}'s title updated to '#{chapter_name}'")
@@ -129,7 +125,7 @@ class Book < ApplicationRecord
           end
         end
 
-        # CREATAE `PauriTranslation`
+        # CREATE `PauriTranslation`
         next unless pauri_translation_en.present?
         pauri_translation = @pauri.translation || PauriTranslation.new(:pauri_id => @pauri.id)
         pauri_translation.update(:en_translation => pauri_translation_en, :en_translator => translator)
