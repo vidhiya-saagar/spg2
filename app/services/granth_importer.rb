@@ -9,7 +9,9 @@ class GranthImporter
     @blob = CSV.parse(csv_file, :headers => true)
   end
 
-  def execute
+  class InvalidBookNameError < StandardError; end
+
+  def execute # rubocop:disable Metrics/CyclomaticComplexity
     @blob.each do |row|
       # ALL FIELDS
       book_name = row['Book_Name'].try(:strip)
@@ -19,14 +21,14 @@ class GranthImporter
       tuk = row['Tuk'].try(:strip)
       pauri_number = row['Pauri_Number'].try(:to_i)
 
-      # TODO: When ready, we can import these fields as well!
-      # footnotes = row['Footnotes'].try(:strip)
-      # extended_ref = row['Extended_Ref'].try(:strip)
-      # extended_meaning = row['Extended_Meaning'].try(:strip)
+      footnotes = row['Footnotes'].try(:strip)
+      external_pauri = row['Extended_Ref'].try(:strip) # Gurbani or Secondary Source
+      external_pauri_footnotes = row['Extended_Meaning'].try(:strip) # Bhai Vir Singh's footnote on the Gurbani/Secondary Source
       # translation_en = row['Translation_EN'].try(:strip)
 
       # BOOK
       @book = Book.find_by(:en_title => book_name)
+      raise InvalidBookNameError, "Invalid book name: #{book_name}" if @book.nil?
 
       # CHAPTER
       create_chapter(chapter_name, chapter_number) if new_chapter?(chapter_number)
@@ -40,8 +42,14 @@ class GranthImporter
       # PAURI
       create_pauri(pauri_number) if new_pauri?(pauri_number)
 
+      # EXTERNAL PAURI
+      create_external_pauri(external_pauri, external_pauri_footnotes) if external_pauri.present?
+
       # TUKS
       create_tuk(tuk)
+
+      # TUK FOOTNOTES
+      create_tuk_footnote(footnotes) if footnotes.present?
     end
   end
 
@@ -65,12 +73,26 @@ class GranthImporter
     )
   end
 
+  def create_external_pauri(external_pauri, external_pauri_footnotes)
+    @book.last_pauri.create_external_pauri(
+      :original_content => external_pauri,
+      :content => external_pauri,
+      :bhai_vir_singh_footnote => external_pauri_footnotes
+    )
+  end
+
   def create_tuk(tuk)
     @book.last_pauri.tuks.create(
       :chapter => @book.last_chapter,
       :sequence => (@book.last_tuk.try(:sequence).to_i + 1) || 1,
       :content => tuk,
       :original_content => tuk
+    )
+  end
+
+  def create_tuk_footnote(footnotes)
+    @book.last_tuk.create_footnote(
+      :bhai_vir_singh_footnote => footnotes
     )
   end
 
