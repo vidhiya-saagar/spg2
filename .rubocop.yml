@@ -113,3 +113,10 @@ Rails/NotNullColumn:
 
 Lint/MissingCopEnableDirective:
   Enabled: false
+
+RSpec/ExampleLength:
+  Max: 10
+
+Naming/MethodName:
+  AllowedPatterns:
+    - "^READABLE_ATTRIBUTES$"

@@ -55,6 +55,8 @@ group :development, :test do
   gem 'rspec-rails', '~> 6.0.0'
   # Reading this guide: https://www.rubydoc.info/gems/factory_bot/file/GETTING_STARTED.md
   gem 'factory_bot_rails'
+
+  gem 'dotenv-rails'
 end
 
 group :development do
@@ -74,3 +76,6 @@ group :test do
   gem 'selenium-webdriver'
   gem 'webdrivers'
 end
+
+gem 'contentful'
+gem 'tty-prompt'
