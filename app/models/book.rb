@@ -85,6 +85,7 @@ class Book < ApplicationRecord
         raise "Tuk not found: #{tuk}" if @tuk.nil?
 
         # CREATE `TukTranslation`
+        # rubocop:disable Metrics/BlockNesting
         if tuk_translation_en.present?
           if @pauri.translation.present?
             # destroy_tuk_option = @tuk.translation.nil? ? 'Do not create `TukTranslation`' : 'Destroy existing `TukTranslation`'

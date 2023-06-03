@@ -1,3 +1,4 @@
+# rubocop:disable RSpec/NestedGroups, RSpec/MultipleExpectations
 # frozen_string_literal: true
 
 require 'rails_helper'
@@ -117,3 +118,5 @@ RSpec.describe Book do
     end
   end
 end
+
+# rubocop:enable RSpec/NestedGroups, RSpec/MultipleExpectations
