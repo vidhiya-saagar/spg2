@@ -60,7 +60,7 @@ class Book < ApplicationRecord
         tuk = row['Tuk'].try(:strip)
         pauri_number = row['Pauri_Number'].to_i
         pauri_translation_en = row['Pauri_Translation_EN'].try(:strip)
-        tuk_translation_en = row['Tuk_Translation_EN'].try(:strip)
+        tuk_translation_en = row['Tuk_Translation_EN'].try(:strip) || row['Translation_EN'].try(:strip)
         # footnotes = row['Footnotes'].try(:strip) # # UNUSED
         # extended_ref = row['Extended_Ref'].try(:strip) # UNUSED
         translator = row['Assigned_Singh'].try(:strip)
