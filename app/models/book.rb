@@ -43,7 +43,7 @@ class Book < ApplicationRecord
   # - Assigned_Singh: String | NULL
   # - Extended_Meaning: String | NULL
   ##
-  def import_chapter(chapter_number)
+  def import_chapter(chapter_number) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/PerceivedComplexity
     prompt = TTY::Prompt.new
     pastel = Pastel.new
 
@@ -52,19 +52,19 @@ class Book < ApplicationRecord
 
     blob = @chapter.csv_rows
 
-    ActiveRecord::Base.transaction do
-      blob.each do |row|
+    ActiveRecord::Base.transaction do # rubocop:disable Metrics/BlockLength
+      blob.each do |row| # rubocop:disable Metrics/BlockLength
         chapter_number = row['Chapter_Number'].to_i
         chapter_name = row['Chapter_Name'].try(:strip)
-        chhand_type = row['Chhand_Type'].try(:strip)
+        # chhand_type = row['Chhand_Type'].try(:strip) # UNUSED
         tuk = row['Tuk'].try(:strip)
         pauri_number = row['Pauri_Number'].to_i
         pauri_translation_en = row['Pauri_Translation_EN'].try(:strip)
         tuk_translation_en = row['Tuk_Translation_EN'].try(:strip)
-        footnotes = row['Footnotes'].try(:strip) # Bhai Vir Singh footnotes
-        extended_ref = row['Extended_Ref'].try(:strip)
+        # footnotes = row['Footnotes'].try(:strip) # # UNUSED
+        # extended_ref = row['Extended_Ref'].try(:strip) # UNUSED
         translator = row['Assigned_Singh'].try(:strip)
-        extended_meaning = row['Extended_Meaning'].try(:strip)
+        # extended_meaning = row['Extended_Meaning'].try(:strip) # UNUSED
 
         if @chapter.title != chapter_name
           message = "The name in Book #{sequence}, Chapter #{chapter_number} is " +
@@ -87,11 +87,11 @@ class Book < ApplicationRecord
         # CREATE `TukTranslation`
         if tuk_translation_en.present?
           if @pauri.translation.present?
-            destroy_tuk_option = @tuk.translation.nil? ? 'Do not create `TukTranslation`' : 'Destroy existing `TukTranslation`'
+            # destroy_tuk_option = @tuk.translation.nil? ? 'Do not create `TukTranslation`' : 'Destroy existing `TukTranslation`'
             choices = [
               'Continue with the `TukTranslation` and KEEP the `PauriTranslation`, too!',
               'Destroy the existing `PauriTranslation`, and continue with only the `TukTranslation`',
-              destroy_tuk_option += 'Keep the `PauriTranslation`',
+              # destroy_tuk_option += 'Keep the `PauriTranslation`',
               pastel.red('Abort')
             ]
             selected_choice = prompt.select('Choose an option:', choices)
