@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'csv'
 class Book < ApplicationRecord
   has_many :chapters, :dependent => :destroy
 
@@ -43,14 +44,19 @@ class Book < ApplicationRecord
   # - Extended_Meaning: String | NULL
   ##
   def import_chapter(chapter_number)
-    file_path = "lib/imports/#{sequence}/#{chapter_number}.csv"
-    raise "CSV file #{file_path} not found" unless File.exist?(file_path)
-
     prompt = TTY::Prompt.new
     pastel = Pastel.new
 
+    Rails.logger.debug 'HELLO'
+    @chapter = self.chapters.find_by(:number => chapter_number)
+    raise "Chapter not found: #{chapter_number}" if @chapter.nil?
+
+    blob = @chapter.csv_rows
+
+    # put "blob ::::: #{blob}"
+
     ActiveRecord::Base.transaction do
-      CSV.parse(file_path, :headers => true).each do |row|
+      blob.each do |row|
         chapter_number = row['Chapter_Number'].to_i
         chapter_name = row['Chapter_Name'].try(:strip)
         chhand_type = row['Chhand_Type'].try(:strip)
@@ -62,9 +68,6 @@ class Book < ApplicationRecord
         extended_ref = row['Extended_Ref'].try(:strip)
         translator = row['Assigned_Singh'].try(:strip)
         extended_meaning = row['Extended_Meaning'].try(:strip)
-
-        @chapter = self.chapters.find_by(:number => chapter_number)
-        raise "Chapter not found: #{chapter_number}" if @chapter.nil?
 
         if @chapter.title != chapter_name
           message = "The name in Book #{sequence}, Chapter #{chapter_number} is " +
@@ -126,7 +129,7 @@ class Book < ApplicationRecord
         end
 
         # CREATE `PauriTranslation`
-        next unless pauri_translation_en.present?
+        next if pauri_translation_en.blank?
         pauri_translation = @pauri.translation || PauriTranslation.new(:pauri_id => @pauri.id)
         pauri_translation.update(:en_translation => pauri_translation_en, :en_translator => translator)
         Rails.logger.debug pastel.green("✓ `PauriTranslation` created or updated for Pauri # #{pauri_number}")

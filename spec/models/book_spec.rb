@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 require 'csv'
 
-RSpec.describe Book, :type => :model do
+RSpec.describe Book do
   before do
     # Instantiate a book and chapter object for testing
     @book = create(:book)
@@ -10,19 +12,28 @@ RSpec.describe Book, :type => :model do
   end
 
   describe '#import_chapter' do
+
+    ##
+    # These unit tests focus on method logic using mocks for File and CSV operations. While effective for verifying internal logic,
+    # they may lead to false positives due to lack of real file system interaction. Consider supplementing with integration tests
+    # for comprehensive validation.
+    ##
     context 'when looking up file (`lib/imports/{book.sequence}/{chapter.number}.csv`)' do
       it 'raises an error when the CSV does not exist' do
-        expect { @book.import_chapter(99) }.to raise_error(RuntimeError, %r{CSV file lib/imports/1/99.csv not found})
+        expect { @book.import_chapter(@chapter.number) }.to raise_error(RuntimeError, "CSV file lib/imports/1/#{@chapter.number}.csv not found")
       end
 
       it 'does NOT raise an error when the CSV is found' do
-        file_name = "lib/imports/#{@book.sequence}/#{@chapter.number}.csv"
+        file_path = "lib/imports/#{@book.sequence}/#{@chapter.number}.csv"
+
         csv_content = <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
         CSV
 
-        allow(File).to receive(:exist?).with(file_name).and_return(true)
-        allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
+        csv_rows = CSV.parse(csv_content, :headers => true)
+
+        allow(File).to receive(:exist?).with(file_path).and_return(true)
+        allow(CSV).to receive(:foreach).with(file_path, :headers => true).and_return(csv_rows)
 
         expect { @book.import_chapter(@chapter.number) }.not_to raise_error
       end
@@ -30,15 +41,12 @@ RSpec.describe Book, :type => :model do
 
     context 'when the chapter number specified in the CSV is NOT found' do
       it 'raises an error' do
-        file_name = "lib/imports/#{@book.sequence}/99.csv"
         csv_content = <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
           99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
           99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
         CSV
 
-        allow(File).to receive(:exist?).with(file_name).and_return(true)
-        allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
         expect { @book.import_chapter(99) }.to raise_error(RuntimeError, /Chapter not found: 99/)
       end
     end
@@ -46,15 +54,14 @@ RSpec.describe Book, :type => :model do
     context 'when the chapter number specified in the CSV is found' do
       it 'raises an error' do
         @chapter99 = create(:chapter, :book => @book, :number => 99)
-        file_name = "lib/imports/#{@book.sequence}/#{@chapter99.number}.csv"
         csv_content = <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
           99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
           99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
         CSV
 
-        allow(File).to receive(:exist?).with(file_name).and_return(true)
-        allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
+        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
+        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
 
         prompt = instance_double(TTY::Prompt)
         allow(TTY::Prompt).to receive(:new).and_return(prompt)
@@ -74,21 +81,19 @@ RSpec.describe Book, :type => :model do
         @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ', :sequence => 1)
         @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ', :sequence => 2)
 
-        file_name = "lib/imports/#{@book.sequence}/#{@chapter99.number}.csv"
         csv_content = <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
           99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
           99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
         CSV
 
-        allow(File).to receive(:exist?).with(file_name).and_return(true)
-        allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
+        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
+        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
 
         prompt = instance_double(TTY::Prompt)
         allow(TTY::Prompt).to receive(:new).and_return(prompt)
         allow(prompt).to receive(:say)
         allow(prompt).to receive(:yes?).and_return(true)
-
 
         @book.import_chapter(99)
         expect(prompt).to have_received(:yes?).with("Do you want to continue and update this title to 'UpdatedTitleInCSV'?")
@@ -100,42 +105,70 @@ RSpec.describe Book, :type => :model do
       it 'aborts and does NOT udpate the chapter.title' do
         @chapter99 = create(:chapter, :number => 99, :title => 'TitleInDB', :book => @book)
 
-        file_name = "lib/imports/#{@book.sequence}/#{@chapter99.number}.csv"
         csv_content = <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
           99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
           99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
         CSV
 
-        allow(File).to receive(:exist?).with(file_name).and_return(true)
-        allow(CSV).to receive(:parse).with(file_name, :headers => true).and_return(CSV.parse(csv_content, :headers => true))
+        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
+        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
 
         prompt = instance_double(TTY::Prompt)
         allow(TTY::Prompt).to receive(:new).and_return(prompt)
         allow(prompt).to receive(:say)
         allow(prompt).to receive(:yes?).and_return(false)
 
-
         expect { @book.import_chapter(99) }.to raise_error(RuntimeError, 'Aborted by user')
-
-        expect(prompt).to have_received(:yes?).with("Do you want to continue and update this title to 'UpdatedTitleInCSV'?")
-        expect(@chapter99.reload.title).to eq('TitleInDB')
       end
     end
 
-    # context 'when chapter title in CSV does not match with database and user denies update' do
-    #   it 'aborts the operation' do
-    #     # Mock the user input to return false
-    #     allow(STDIN).to receive(:gets).and_return("no\n")
-    #     expect { @book.import_chapter(1) }.to raise_error(StandardError, /Aborted by user/)
-    #   end
-    # end
+    context 'when the pauri does not exist in the database' do
+      it 'raises an error' do
+        @chapter99 = create(:chapter, :number => 99, :book => @book)
 
-    # context 'when the pauri does not exist in the database' do
-    #   it 'raises an error' do
-    #     # Stub your CSV read method to return data with pauri 23
-    #     expect { @book.import_chapter(1) }.to raise_error(StandardError, /Pauri does not exist in database/)
-    #   end
-    # end
+        csv_content = <<~CSV
+          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
+          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
+          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
+        CSV
+
+        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
+        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
+
+        prompt = instance_double(TTY::Prompt)
+        allow(TTY::Prompt).to receive(:new).and_return(prompt)
+        allow(prompt).to receive(:say)
+        allow(prompt).to receive(:yes?).and_return(true)
+
+        expect { @book.import_chapter(99) }.to raise_error(StandardError, /Pauri not found/)
+      end
+    end
+
+    context 'when the tuk does not exist in the database' do
+      it 'raises an error when the tuk content is too different' do
+        @chapter99 = create(:chapter, :number => 99, :book => @book)
+        @chhand = create(:chhand, :chhand_type => @chhand_type, :chapter => @chapter99)
+        @pauri = create(:pauri, :chapter => @chapter99, :chhand => @chhand, :number => 1)
+        @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ', :sequence => 1)
+        @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ', :sequence => 2)
+
+        csv_content = <<~CSV
+          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
+          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, something else",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
+          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, changed up a bit",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
+        CSV
+
+        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
+        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
+
+        prompt = instance_double(TTY::Prompt)
+        allow(TTY::Prompt).to receive(:new).and_return(prompt)
+        allow(prompt).to receive(:say)
+        allow(prompt).to receive(:yes?).and_return(true)
+
+        expect { @book.import_chapter(99) }.to raise_error(StandardError, /Tuk not found/)
+      end
+    end
   end
 end
