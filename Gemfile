@@ -78,4 +78,5 @@ group :test do
 end
 
 gem 'contentful'
+gem 'rack-cors'
 gem 'tty-prompt'
