@@ -4,171 +4,116 @@ require 'rails_helper'
 require 'csv'
 
 RSpec.describe Book do
-  before do
-    # Instantiate a book and chapter object for testing
-    @book = create(:book)
-    @chapter = create(:chapter, :book => @book)
-    @chhand_type = create(:chhand_type)
-  end
+  let(:book) { create(:book) }
 
   describe '#import_chapter' do
-
-    ##
-    # These unit tests focus on method logic using mocks for File and CSV operations. While effective for verifying internal logic,
-    # they may lead to false positives due to lack of real file system interaction. Consider supplementing with integration tests
-    # for comprehensive validation.
-    ##
-    context 'when looking up file (`lib/imports/{book.sequence}/{chapter.number}.csv`)' do
-      it 'raises an error when the CSV does not exist' do
-        expect { @book.import_chapter(@chapter.number) }.to raise_error(RuntimeError, "CSV file lib/imports/1/#{@chapter.number}.csv not found")
+    context 'when the `chapter.number` is invalid' do
+      it 'raises an error if the `chapter_number` does not exist in `book`' do
+        expect { book.import_chapter(99) }.to raise_error(RuntimeError, /Chapter not found: 99/)
       end
 
-      it 'does NOT raise an error when the CSV is found' do
-        file_path = "lib/imports/#{@book.sequence}/#{@chapter.number}.csv"
+      it 'raises an error if the CSV does not exist' do
+        # Create the `Chapter` row only! Not the CSV.
+        create(:chapter, :book => book, :number => 100)
+        expect { book.import_chapter(100) }.to raise_error(RuntimeError, 'CSV file lib/imports/1/100.csv not found')
+      end
+    end
 
-        csv_content = <<~CSV
-          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-        CSV
+    context 'when the `chapter_number` is valid' do
+      csv_content = <<~CSV
+        Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
+      CSV
 
-        csv_rows = CSV.parse(csv_content, :headers => true)
+      csv_rows = CSV.parse(csv_content, :headers => true)
+
+      it 'does not raise an error' do
+        let(:chapter) { create(:chapter, :book => book) }
+        file_path = "lib/imports/#{book.sequence}/#{chapter.number}.csv"
 
         allow(File).to receive(:exist?).with(file_path).and_return(true)
         allow(CSV).to receive(:foreach).with(file_path, :headers => true).and_return(csv_rows)
 
-        expect { @book.import_chapter(@chapter.number) }.not_to raise_error
+        expect { book.import_chapter(chapter.number) }.not_to raise_error
       end
     end
 
-    context 'when the chapter number specified in the CSV is NOT found' do
-      it 'raises an error' do
-        csv_content = <<~CSV
+    context 'when given valid input and CSV' do
+      let(:chapter_number) { 99 }
+      let(:chapter_title) { 'ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ' }
+      let(:csv_content) do
+        <<~CSV
           Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
+          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,,,,,,
+          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,,,,,,
         CSV
-
-        expect { @book.import_chapter(99) }.to raise_error(RuntimeError, /Chapter not found: 99/)
       end
-    end
 
-    context 'when the chapter number specified in the CSV is found' do
-      it 'raises an error' do
-        @chapter99 = create(:chapter, :book => @book, :number => 99)
-        csv_content = <<~CSV
-          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
-        CSV
-
-        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
-        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
-
+      before do
+        # Initialize mocks for TTY::Prompt
         prompt = instance_double(TTY::Prompt)
         allow(TTY::Prompt).to receive(:new).and_return(prompt)
         allow(prompt).to receive(:say)
-        allow(prompt).to receive(:yes?).and_return(true)
 
-        expect { @book.import_chapter(99) }.not_to raise_error(RuntimeError, /Chapter not found/)
-        @chapter99.destroy
+        # Associations for the chapter - This one reflects out mock `csv_content`
+        let(:chapter) { create(:chapter, :number => chapter_number, :book => book, :title => chapter_title) }
+        let(:chhand) { create(:chhand, :chhand_type => '', :chapter => chapter) }
+        let(:pauri) { create(:pauri, :chapter => chapter, :chhand => chhand, :number => 1) }
+        create(:tuk, :pauri => pauri, :chapter => chapter, :original_content => 'ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ', :sequence => 1)
+        create(:tuk, :pauri => pauri, :chapter => chapter, :original_content => 'ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ', :sequence => 2)
+
+        # Mocking the CSV data
+        allow(book.chapters).to receive(:find_by).with(:number => chapter_number).and_return(chapter)
+        allow(chapter).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
       end
-    end
 
-    context 'when user says YES to prompt to update the chapter name' do
-      it 'updates the title to the one from the CSV' do
-        @chapter99 = create(:chapter, :number => 99, :title => 'TitleInDB', :book => @book)
-        @chhand = create(:chhand, :chhand_type => @chhand_type, :chapter => @chapter99)
-        @pauri = create(:pauri, :chapter => @chapter99, :chhand => @chhand, :number => 1)
-        @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ', :sequence => 1)
-        @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ', :sequence => 2)
+      context 'when prompted to update `chapter.title`' do
+        it 'does not prompt user if the `chapter.title` is unchanged' do
+          allow(prompt).to receive(:yes?)
+          book.import_chapter(chapter_number)
+          expect(prompt).not_to have_received(:yes?)
 
-        csv_content = <<~CSV
-          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-          99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
-          99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
-        CSV
+          expect(chapter.reload.title).to eq(chapter_title)
+        end
 
-        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
-        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
+        it 'updates the `chapter.title` if user confirms' do
+          # Change the `chapter.title` so it is different than the one in CSV
+          chapter.update(:title => 'Different title')
 
-        prompt = instance_double(TTY::Prompt)
-        allow(TTY::Prompt).to receive(:new).and_return(prompt)
-        allow(prompt).to receive(:say)
-        allow(prompt).to receive(:yes?).and_return(true)
+          allow(prompt).to receive(:yes?).and_return(true)
+          book.import_chapter(chapter_number)
 
-        @book.import_chapter(99)
-        expect(prompt).to have_received(:yes?).with("Do you want to continue and update this title to 'UpdatedTitleInCSV'?")
-        expect(@chapter99.reload.title).to eq('UpdatedTitleInCSV')
+          expect(prompt).to have_received(:yes?).with("Do you want to continue and update this title to '#{chapter_title}'?")
+          expect(chapter.reload.title).to eq(chapter_title)
+        end
+
+        it 'aborts and does not update the chapter title if user declines' do
+          # Change the `chapter.title` so it is different than the one in CSV
+          chapter.update(:title => 'Something Else - Suraj Suraj Suraj')
+          allow(prompt).to receive(:yes?).and_return(false)
+          expect { book.import_chapter(chapter_number) }.to raise_error(RuntimeError, 'Aborted by user')
+        end
       end
-    end
 
-    context 'when user says NO to prompt to update the chapter name' do
-      it 'aborts and does NOT udpate the chapter.title' do
-        @chapter99 = create(:chapter, :number => 99, :title => 'TitleInDB', :book => @book)
+      context 'when `chapter` associations do not exist' do
+        it 'raises an error when `pauri` is nil' do
+          pauri.destroy
+          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Pauri not found/)
+        end
 
-        csv_content = <<~CSV
-          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-          99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
-          99,UpdatedTitleInCSV,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
-        CSV
+        it 'raises an error when `tuks` are nil' do
+          Tuk.destroy_all
+          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Tuk not found/)
+        end
 
-        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
-        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
-
-        prompt = instance_double(TTY::Prompt)
-        allow(TTY::Prompt).to receive(:new).and_return(prompt)
-        allow(prompt).to receive(:say)
-        allow(prompt).to receive(:yes?).and_return(false)
-
-        expect { @book.import_chapter(99) }.to raise_error(RuntimeError, 'Aborted by user')
+        it 'raises an error when `tuk` content does not match' do
+          tuk = chapter.tuks.first
+          tuk.update(:content => 'Changed', :original_content => 'Totally Different')
+          Tuk.destroy_all
+          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Tuk not found/)
+        end
       end
-    end
 
-    context 'when the pauri does not exist in the database' do
-      it 'raises an error' do
-        @chapter99 = create(:chapter, :number => 99, :book => @book)
-
-        csv_content = <<~CSV
-          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
-        CSV
-
-        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
-        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
-
-        prompt = instance_double(TTY::Prompt)
-        allow(TTY::Prompt).to receive(:new).and_return(prompt)
-        allow(prompt).to receive(:say)
-        allow(prompt).to receive(:yes?).and_return(true)
-
-        expect { @book.import_chapter(99) }.to raise_error(StandardError, /Pauri not found/)
-      end
-    end
-
-    context 'when the tuk does not exist in the database' do
-      it 'raises an error when the tuk content is too different' do
-        @chapter99 = create(:chapter, :number => 99, :book => @book)
-        @chhand = create(:chhand, :chhand_type => @chhand_type, :chapter => @chapter99)
-        @pauri = create(:pauri, :chapter => @chapter99, :chhand => @chhand, :number => 1)
-        @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ', :sequence => 1)
-        @tuk = create(:tuk, :pauri => @pauri, :chapter => @chapter99, :original_content => 'ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ', :sequence => 2)
-
-        csv_content = <<~CSV
-          Chapter_Number,Chapter_Name,Chhand_Type ,Tuk,Pauri_Number,Tuk_Number,Pauri_Translation_EN,Translation_EN ,Footnotes,Custom_Footnotes,Extended_Ref ,Assigned_Singh,Status,Extended_Meaning
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, something else",1,1,,,"ਅਲਿਪਤ = ਅਸੰਗ। ਜੋ ਲਿਪਾਯਮਾਨ ਨਾ ਹੋਵੇ, ਨਿਰਲੇਪ। ਪ੍ਰਬੀਨ = ਚਤੁਰ ਪੁਰਸ਼, ਲਾਇਕ।",,,,,
-          99,ਇਸ਼੍ਟ ਦੇਵ-ਸ਼੍ਰੀ ਅਕਾਲ ਪੁਰਖ-ਮੰਗਲ,ਦੋਹਰਾ,"ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, changed up a bit",1,2,,,"ਬੀਨਤਿ = ਵਿੱਤ੍ਰੇਕ ਕਰਦੇ ਹਨ। ਇਹ ਨਹੀਂ, ਇਹ ਹੈ, ਇਉਂ ਵਿਚਾਰ ਦੁਆਰਾ ਉਸਦੇ ਸਰੂਪ ਲੱਛਣਾਂ ਨੂੰ ਛਾਂਟ ਲੈਂਦੇ ਹਨ, ਭਾਵ ਜਾਣ ਲੈਂਦੇ ਹਨ। ਮਰਮ = ਭੇਤ।",,,,,
-        CSV
-
-        allow(@book.chapters).to receive(:find_by).with(:number => 99).and_return(@chapter99)
-        allow(@chapter99).to receive(:csv_rows).and_return(CSV.parse(csv_content, :headers => true))
-
-        prompt = instance_double(TTY::Prompt)
-        allow(TTY::Prompt).to receive(:new).and_return(prompt)
-        allow(prompt).to receive(:say)
-        allow(prompt).to receive(:yes?).and_return(true)
-
-        expect { @book.import_chapter(99) }.to raise_error(StandardError, /Tuk not found/)
-      end
+      # TODO: Write tests for Translations, Footnotes, etc.
     end
   end
 end

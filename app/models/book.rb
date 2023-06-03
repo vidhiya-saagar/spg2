@@ -47,13 +47,10 @@ class Book < ApplicationRecord
     prompt = TTY::Prompt.new
     pastel = Pastel.new
 
-    Rails.logger.debug 'HELLO'
     @chapter = self.chapters.find_by(:number => chapter_number)
     raise "Chapter not found: #{chapter_number}" if @chapter.nil?
 
     blob = @chapter.csv_rows
-
-    # put "blob ::::: #{blob}"
 
     ActiveRecord::Base.transaction do
       blob.each do |row|
@@ -81,6 +78,7 @@ class Book < ApplicationRecord
         end
 
         @pauri = @chapter.pauris.find_by(:number => pauri_number)
+
         raise "Pauri not found: #{pauri_number}" if @pauri.nil?
 
         @tuk = @pauri.tuks.find_by('original_content LIKE ?', tuk)
