@@ -1,0 +1,19 @@
+# fly.toml app configuration file generated for spg2 on 2023-06-04T08:15:45-04:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = "spg2"
+primary_region = "yyz"
+console_command = "/rails/bin/rails console"
+
+[http_service]
+  internal_port = 3000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[statics]]
+  guest_path = "/app/public"
+  url_prefix = "/"
