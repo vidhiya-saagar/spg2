@@ -1,33 +1,35 @@
-# Stage 1: Build stage
-FROM ruby:3.2.1-alpine AS builder
+# Base stage
+FROM ruby:3.2.1-alpine AS base
+
+WORKDIR /app
 
 RUN apk --update add \
     build-base \
     sqlite-dev \
-    nodejs
-
-WORKDIR /app
+    nodejs \
+    tzdata
 
 COPY Gemfile Gemfile.lock ./
-RUN gem install bundler:2.4.7
-RUN bundle config set path 'vendor/bundle'
-RUN bundle config set deployment 'true' 
-RUN bundle install --jobs=4 --without development test || echo "bundle install failed"
-RUN bundle show rails || echo "Rails not installed"
+
+RUN gem install bundler && \
+    bundle config set path 'vendor/bundle' && \
+    bundle config set deployment 'true' && \
+    bundle install --jobs=4 --without development test || echo "bundle install failed"
+
+# Builder stage
+FROM base AS builder
 
 COPY . .
 
-# Stage 2: Final image
-FROM ruby:3.2.1-alpine
+# Final stage
+FROM base
 
 RUN apk --update add \
     sqlite-libs \
     nodejs
 
-WORKDIR /app
-
 COPY --from=builder /app /app
 
-EXPOSE 3000
+# EXPOSE 1843
 
-CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
+CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "80"]
