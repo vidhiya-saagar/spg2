@@ -1,5 +1,7 @@
 # SPG2
 
+> **Note**: WIP. Will update the README soon.
+
 Open source project for digitizing the Suraj Prakash Granth. This app is more of an admin tool.
 
 The most important thing you will find in here, is:
@@ -39,14 +41,48 @@ Not pushing a crappy app. The code might be questionable, tho, lol.
 
 ### Short Term
 * [x] Finish manual entry, parsing for the Suraj Prakash Granth `.pdf` files
-* [] Recreate new DB that can support the *main* features (footnotes, unicode)
-* [] Add content to DB, like things from Raas 12, etc.
+* [x] Recreate new DB that can support the *main* features (footnotes, unicode)
+* [x] Add content to DB, like things from Raas 12, etc.
 ### Long Term
 
 (This is not in order. N'or is it a refined list).
 
-* [] Can we use this database to replace the one on https://spg.dev/books
+* [x] Can we use this database to replace the one on https://spg.dev/books
 * [] Can we easily import chapters that have been translated, etc?
 * [] Work with [ShabadOS](https://github.com/shabados) so we can researchers and scholars search engine access
-* [] Work with [Jonathon Collie](https://www.jonathancollie.com/) to make the new SPG front-end app.
-* [] Create a footnote, richtext editor.
+* []x Work with [Jonathon Collie](https://www.jonathancollie.com/) to make the new SPG front-end app.
+* [x] Create a footnote, richtext editor.
+
+---
+
+## Deployment Guide
+
+This application is deployed with Fly.io, a platform that allows you to run your applications globally. 
+
+### Prerequisites
+
+1. **Fly.io account**: As a maintainer, you need to have an account on [Fly.io](https://fly.io). You can sign up on their website.
+
+2. **Fly.io CLI**: You need to have the Fly.io Command Line Interface (CLI) installed on your local machine. You can install it by following the instructions [here](https://fly.io/docs/getting-started/installing-flyctl/).
+
+3. **Authentication**: After installing the CLI, authenticate it with your account. The easiest way is by using your GitHub account. Run the following command in your terminal and follow the instructions:
+   ```
+   flyctl auth github
+   ```
+
+### Deploying the Application
+
+1. **Clone the repository**: Make sure you have the latest version of the application code on your local machine.
+
+2. **Navigate to the project repository**: Change your current directory to the project repository in your terminal.
+
+3. **Deploy**: Run the following command to deploy the application:
+   ```
+   flyctl deploy
+   ```
+
+### Important Note
+
+The production database for this application is configured to use `development.sqlite`. Therefore, the behavior of the application in the production environment will be identical to its behavior in the development environment.
+
+---
