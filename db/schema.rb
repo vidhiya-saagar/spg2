@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_05_08_124727) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_03_170655) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -20,6 +20,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_124727) do
     t.text "artwork_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "chapter_kathas", force: :cascade do |t|
+    t.integer "chapter_id", null: false
+    t.integer "katha_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chapter_id"], name: "index_chapter_kathas_on_chapter_id"
+    t.index ["katha_id"], name: "index_chapter_kathas_on_katha_id"
   end
 
   create_table "chapters", force: :cascade do |t|
@@ -68,6 +77,24 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_124727) do
     t.index ["pauri_id"], name: "index_external_pauris_on_pauri_id"
   end
 
+  create_table "gianis", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "artwork_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "kathas", force: :cascade do |t|
+    t.integer "giani_id", null: false
+    t.string "title"
+    t.string "public_url"
+    t.string "soundcloud_url"
+    t.integer "year"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["giani_id"], name: "index_kathas_on_giani_id"
+  end
+
   create_table "pauri_footnotes", force: :cascade do |t|
     t.integer "pauri_id", null: false
     t.text "bhai_vir_singh_footnote"
@@ -88,7 +115,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_124727) do
   end
 
   create_table "pauris", force: :cascade do |t|
-    t.integer "number", null: false
+    t.integer "number"
     t.integer "chapter_id", null: false
     t.integer "chhand_id", null: false
     t.datetime "created_at", null: false
@@ -130,10 +157,13 @@ ActiveRecord::Schema[7.0].define(version: 2023_05_08_124727) do
     t.index ["sequence", "pauri_id"], name: "index_tuks_on_sequence_and_pauri_id", unique: true
   end
 
+  add_foreign_key "chapter_kathas", "chapters"
+  add_foreign_key "chapter_kathas", "kathas"
   add_foreign_key "chapters", "books"
   add_foreign_key "chhands", "chapters"
   add_foreign_key "chhands", "chhand_types"
   add_foreign_key "external_pauris", "pauris"
+  add_foreign_key "kathas", "gianis"
   add_foreign_key "pauri_footnotes", "pauris"
   add_foreign_key "pauri_translations", "pauris"
   add_foreign_key "pauris", "chapters"
