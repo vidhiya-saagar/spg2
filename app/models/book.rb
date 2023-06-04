@@ -18,4 +18,8 @@ class Book < ApplicationRecord
   def last_tuk
     return last_pauri.tuks.last
   end
+
+  def number_of_chapters_released
+    return self.chapters.released.count
+  end
 end
