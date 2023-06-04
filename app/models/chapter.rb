@@ -5,7 +5,7 @@ class Chapter < ApplicationRecord
   has_many :chhands, :dependent => :destroy
   has_many :pauris, :dependent => :destroy
   has_many :tuks, :through => :pauris
-  has_many :chapter_kathas
+  has_many :chapter_kathas, :dependent => :destroy
   has_many :kathas, :through => :chapter_kathas
 
   # @brief Returns the released chapters for the book.
