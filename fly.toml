@@ -1,0 +1,35 @@
+# fly.toml is a configuration file for Fly.io, a deployment and runtime platform.
+# It's written in TOML (Tom's Obvious, Minimal Language).
+# You can read more about the syntax here: https://toml.io/
+
+# This is the name of your application on Fly.
+app = "spg"
+
+# The primary region where your application will be deployed. (Toronto, ON in this case).
+primary_region = "yyz"
+
+# Command to start the Rails console on the Fly platform. This can be used for debugging purposes.
+console_command = "/rails/bin/rails console"
+
+# Configuration for the http service provided by your app on Fly.
+[http_service]
+  # The port on which your app listens for incoming HTTP connections. It matches the port defined in your Dockerfile CMD.
+  internal_port = 80 
+
+  # This forces all HTTP connections to be redirected to HTTPS for secure communication.
+  # We don't have to worry about setting it to 443, I think Fly.io does that automatically.
+  force_https = true
+
+  # When true, Fly.io will automatically stop instances when they're not needed to save resources.
+  auto_stop_machines = true
+
+  # When true, Fly.io will automatically start instances when they're needed.
+  auto_start_machines = true
+
+  # Minimum number of instances running at all times.
+  min_machines_running = 0
+
+# Configuration for static files. In this case, we are serving the files in the /app/public directory at the root URL ("/").
+[[statics]]
+  guest_path = "/app/public"
+  url_prefix = "/"

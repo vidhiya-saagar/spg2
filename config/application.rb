@@ -25,6 +25,18 @@ module Spg2
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
+    config.middleware.insert_before 0, Rack::Cors do
+      allow do
+        origins 'https://spg.dev/', 'localhost:3000', 'localhost:3001'
+
+        resource '*',
+          headers: :any,
+        methods: [:get]
+      end
+    end
+
+
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files
