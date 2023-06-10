@@ -5,6 +5,18 @@ class Chapter < ApplicationRecord
   has_many :chhands, :dependent => :destroy
   has_many :pauris, :dependent => :destroy
   has_many :tuks, :through => :pauris
+  has_many :chapter_kathas, :dependent => :destroy
+  has_many :kathas, :through => :chapter_kathas
+
+  # @brief Returns the released chapters for the book.
+  # This is a temporary way to feature gate unreleased chapters.
+  # @example `@chapters = Chapter.released.find(...)`
+  # @return [ActiveRecord::Relation] Set of released chapters.
+  if Rails.env.production?
+    scope :released, -> { where.not(:artwork_url => nil) }
+  else
+    scope :released, -> { all }
+  end
 
   def csv_rows
     file_path = "lib/imports/#{self.book.sequence}/#{self.number}.csv"

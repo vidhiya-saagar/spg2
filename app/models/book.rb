@@ -20,6 +20,10 @@ class Book < ApplicationRecord
     return last_pauri.tuks.last
   end
 
+  def number_of_chapters_released
+    return self.chapters.released.count
+  end
+
   ##
   # Create (or update) the a specific chapter via CSV
   # HOW IT WORKS:
