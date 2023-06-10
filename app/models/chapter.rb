@@ -8,7 +8,11 @@ class Chapter < ApplicationRecord
 
   def csv_rows
     file_path = "lib/imports/#{self.book.sequence}/#{self.number}.csv"
-    raise "CSV file #{file_path} not found" unless File.exist?(file_path)
+
+    unless File.exist?(file_path)
+      puts "CSV file #{file_path} not found. " + Pastel.new.red.on_bright_white.bold("Are you sure you added it to #{file_path}?")
+      raise "CSV file #{file_path} not found. "
+    end
 
     rows = []
     CSV.foreach(file_path, :headers => true) do |row|

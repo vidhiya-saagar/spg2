@@ -36,6 +36,7 @@ class Book < ApplicationRecord
   # - Chhand_Type: String
   # - Tuk: String
   # - Pauri_Number: Integer
+  # - Tuk_Number: Integer
   # - Pauri_Translation_EN: String | NULL
   # - Tuk_Translation_EN: String | NULL
   # - Footnotes: String | NULL
@@ -59,6 +60,7 @@ class Book < ApplicationRecord
         # chhand_type = row['Chhand_Type'].try(:strip) # UNUSED
         tuk = row['Tuk'].try(:strip)
         pauri_number = row['Pauri_Number'].to_i
+        tuk_number = row['Tuk_Number'].to_i
         pauri_translation_en = row['Pauri_Translation_EN'].try(:strip)
         tuk_translation_en = row['Tuk_Translation_EN'].try(:strip) || row['Translation_EN'].try(:strip)
         # footnotes = row['Footnotes'].try(:strip) # # UNUSED
@@ -81,8 +83,30 @@ class Book < ApplicationRecord
 
         raise "Pauri not found: #{pauri_number}" if @pauri.nil?
 
-        @tuk = @pauri.tuks.find_by('original_content LIKE ?', tuk)
+        @tuk = @pauri.tuks.find_by(:sequence => tuk_number)
         raise "Tuk not found: #{tuk}" if @tuk.nil?
+        if @tuk.original_content != tuk
+          # Show the difference between the two strings
+          diff = Diffy::Diff.new(@tuk.original_content, tuk, :include_diff_info => true).to_s(:color)
+          puts diff
+
+          # Prompt the user to decide what to do
+          choices = [
+            "Keep the NEW one from the CSV (update the original) :: #{tuk}",
+            pastel.red("Keep the original :: #{@tuk.original_content}")
+          ]
+
+          selected_choice = prompt.select('Choose an option:', choices)
+
+          case selected_choice
+          when choices[0]
+            @tuk.update(:original_content => tuk)
+            Rails.logger.debug pastel.green("✓ `Tuk` `original_content` updated to #{tuk} - For #{pauri_number}.#{tuk_number}")
+          when choices[1]
+            # Do nothing, keeping the original content
+            Rails.logger.debug pastel.red("x Keeping the original `Tuk` `original_content` - For #{pauri_number}.#{tuk_number}")
+          end
+        end
 
         # CREATE `TukTranslation`
         # rubocop:disable Metrics/BlockNesting

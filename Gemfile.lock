@@ -92,6 +92,7 @@ GEM
       irb (>= 1.5.0)
       reline (>= 0.3.1)
     diff-lcs (1.5.0)
+    diffy (3.4.2)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dotenv (2.8.1)
@@ -310,6 +311,7 @@ DEPENDENCIES
   capybara
   contentful
   debug
+  diffy
   dotenv-rails
   factory_bot_rails
   importmap-rails

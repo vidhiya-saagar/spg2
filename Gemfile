@@ -68,6 +68,10 @@ group :development do
   gem 'rubocop-capybara'
   gem 'rubocop-rails'
   gem 'rubocop-rspec', :require => false
+
+  # CLI Stuff
+  gem 'diffy'
+  gem 'tty-prompt'
 end
 
 group :test do
@@ -78,4 +82,3 @@ group :test do
 end
 
 gem 'contentful'
-gem 'tty-prompt'
