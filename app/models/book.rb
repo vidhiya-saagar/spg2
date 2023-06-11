@@ -87,8 +87,9 @@ class Book < ApplicationRecord
 
         raise "Pauri not found: #{pauri_number}" if @pauri.nil?
 
+        # `Tuk`
         @tuk = @pauri.tuks.find_by(:sequence => tuk_number)
-        raise "Tuk not found: #{tuk}" if @tuk.nil?
+        raise "Tuk #{tuk_number} not found: #{tuk}" if @tuk.nil?
         if @tuk.original_content != tuk
           # Show the difference between the two strings
           diff = Diffy::Diff.new(@tuk.original_content, tuk, :include_diff_info => true).to_s(:color)
