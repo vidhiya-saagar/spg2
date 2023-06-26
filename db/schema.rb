@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_03_170655) do
+ActiveRecord::Schema[7.0].define(version: 2023_06_11_191536) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -85,13 +85,14 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_03_170655) do
   end
 
   create_table "kathas", force: :cascade do |t|
-    t.integer "giani_id", null: false
+    t.integer "giani_id"
     t.string "title"
     t.string "public_url"
     t.string "soundcloud_url"
     t.integer "year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "is_playlist", default: false
     t.index ["giani_id"], name: "index_kathas_on_giani_id"
   end
 
