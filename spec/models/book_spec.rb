@@ -16,7 +16,7 @@ RSpec.describe Book do
       it 'raises an error if the CSV does not exist' do
         # Create the `Chapter` row only! Not the CSV.
         create(:chapter, :book => book, :number => 100)
-        expect { book.import_chapter(100) }.to raise_error(RuntimeError, 'CSV file lib/imports/1/100.csv not found')
+        expect { book.import_chapter(100) }.to raise_error(RuntimeError, %r{CSV file lib/imports/1/100\.csv not found})
       end
     end
 
@@ -26,9 +26,9 @@ RSpec.describe Book do
       CSV
 
       csv_rows = CSV.parse(csv_content, :headers => true)
+      let(:chapter) { create(:chapter, :book => book) }
 
       it 'does not raise an error' do
-        let(:chapter) { create(:chapter, :book => book) }
         file_path = "lib/imports/#{book.sequence}/#{chapter.number}.csv"
 
         allow(File).to receive(:exist?).with(file_path).and_return(true)
@@ -49,16 +49,18 @@ RSpec.describe Book do
         CSV
       end
 
+      let(:chapter) { create(:chapter, :number => chapter_number, :book => book, :title => chapter_title) }
+      let(:chhand_type) { create(:chhand_type, :name => 'ਦੋਹਰਾ') }
+      let(:chhand) { create(:chhand, :chhand_type => chhand_type, :chapter => chapter) }
+      let(:pauri) { create(:pauri, :chapter => chapter, :chhand => chhand, :number => 1) }
+      let(:prompt) { instance_double(TTY::Prompt) }
+
       before do
         # Initialize mocks for TTY::Prompt
-        prompt = instance_double(TTY::Prompt)
         allow(TTY::Prompt).to receive(:new).and_return(prompt)
         allow(prompt).to receive(:say)
 
         # Associations for the chapter - This one reflects out mock `csv_content`
-        let(:chapter) { create(:chapter, :number => chapter_number, :book => book, :title => chapter_title) }
-        let(:chhand) { create(:chhand, :chhand_type => '', :chapter => chapter) }
-        let(:pauri) { create(:pauri, :chapter => chapter, :chhand => chhand, :number => 1) }
         create(:tuk, :pauri => pauri, :chapter => chapter, :original_content => 'ਤੀਨੋ ਕਾਲ ਅਲਿਪਤ ਰਹਿ, ਖੋਜੈਂ ਜਾਂਹਿ ਪ੍ਰਬੀਨ', :sequence => 1)
         create(:tuk, :pauri => pauri, :chapter => chapter, :original_content => 'ਬੀਨਤਿ ਸਚਿਦਾਨੰਦ ਤ੍ਰੈ, ਜਾਨਹਿਂ ਮਰਮ ਰਤੀ ਨ', :sequence => 2)
 
@@ -103,18 +105,17 @@ RSpec.describe Book do
 
         it 'raises an error when `tuks` are nil' do
           Tuk.destroy_all
-          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Tuk not found/)
+          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Tuk 1 not found/)
         end
 
-        it 'raises an error when `tuk` content does not match' do
-          tuk = chapter.tuks.first
-          tuk.update(:content => 'Changed', :original_content => 'Totally Different')
-          Tuk.destroy_all
-          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Tuk not found/)
+        it 'raises an error when 2nd `tuk` is missing' do
+          chapter.tuks.second.destroy
+          expect { book.import_chapter(chapter_number) }.to raise_error(StandardError, /Tuk 2 not found/)
         end
       end
 
       # TODO: Write tests for Translations, Footnotes, etc.
+      # TODO: and write tests for the TTY stuff
     end
   end
 end

@@ -57,6 +57,10 @@ group :development, :test do
   gem 'factory_bot_rails'
 
   gem 'dotenv-rails'
+
+  # CLI Stuff
+  gem 'diffy'
+  gem 'tty-prompt'
 end
 
 group :development do
@@ -68,10 +72,6 @@ group :development do
   gem 'rubocop-capybara'
   gem 'rubocop-rails'
   gem 'rubocop-rspec', :require => false
-
-  # CLI Stuff
-  gem 'diffy'
-  gem 'tty-prompt'
 end
 
 group :test do
