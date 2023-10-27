@@ -22,7 +22,7 @@ class Chapter < ApplicationRecord
     file_path = "lib/imports/#{self.book.sequence}/#{self.number}.csv"
 
     unless File.exist?(file_path)
-      puts "CSV file #{file_path} not found. " + Pastel.new.red.on_bright_white.bold("Are you sure you added it to #{file_path}?")
+      Rails.logger.debug "CSV file #{file_path} not found. " + Pastel.new.red.on_bright_white.bold("Are you sure you added it to #{file_path}?")
       raise "CSV file #{file_path} not found. "
     end
 
