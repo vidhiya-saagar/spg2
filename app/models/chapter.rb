@@ -18,6 +18,31 @@ class Chapter < ApplicationRecord
     scope :released, -> { all }
   end
 
+  # @brief Generates a formatted chapter description with relevant information and links.
+  # @example Generating chapter description
+  #   `Book.find(15).chapters.second.copy_paste_info`
+  # @return [void]
+  def copy_paste_info
+    info = <<~HEREDOC
+      #{self.title} (#{self.en_title})
+
+      #{self.en_short_summary}
+
+      Discover the uncensored Suraj Prakash and its English translations, summaries, and audio discourse at https://spg.dev/chapters/#{self.id}! Explore Chapter #{self.number} of #{self.book.en_title} now!
+
+      ✍🏽 Explore this chapter:
+      https://spg.dev/chapters/#{self.id}
+
+      📖 Explore other chapters in #{self.book.en_title}:
+      https://spg.dev/books/#{self.book.en_title.parameterize}
+
+      ☀️ Explore Gurpartap Suraj Granth - Suraj Prakash Granth (SPG)
+      https://spg.dev/books
+    HEREDOC
+
+    Rails.logger.debug info
+  end
+
   def csv_rows
     file_path = "lib/imports/#{self.book.sequence}/#{self.number}.csv"
 
