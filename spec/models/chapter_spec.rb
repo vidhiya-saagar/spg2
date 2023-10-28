@@ -27,7 +27,7 @@ RSpec.describe 'Chapter' do
 
     it 'cannot save when `book_id` does not belong to a real book' do
       expect do
-        Chapter.create!({ :book_id => 1, :number => 2, :title => 'Mangal' })
+        Chapter.create!({ :book_id => 99, :number => 2, :title => 'Mangal' })
       end.to raise_error(ActiveRecord::RecordInvalid)
     end
   end

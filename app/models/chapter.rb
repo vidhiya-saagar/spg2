@@ -17,4 +17,19 @@ class Chapter < ApplicationRecord
   else
     scope :released, -> { all }
   end
+
+  def csv_rows
+    file_path = "lib/imports/#{self.book.sequence}/#{self.number}.csv"
+
+    unless File.exist?(file_path)
+      Rails.logger.debug "CSV file #{file_path} not found. " + Pastel.new.red.on_bright_white.bold("Are you sure you added it to #{file_path}?")
+      raise "CSV file #{file_path} not found. "
+    end
+
+    rows = []
+    CSV.foreach(file_path, :headers => true) do |row|
+      rows << row
+    end
+    return rows
+  end
 end
