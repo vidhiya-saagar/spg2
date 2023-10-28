@@ -57,6 +57,10 @@ group :development, :test do
   gem 'factory_bot_rails'
 
   gem 'dotenv-rails'
+
+  # CLI Stuff
+  gem 'diffy'
+  gem 'tty-prompt'
 end
 
 group :development do
@@ -79,6 +83,5 @@ end
 
 gem 'contentful'
 gem 'rack-cors'
-gem 'tty-prompt'
 
 gem 'dockerfile-rails', '>= 1.4', :group => :development

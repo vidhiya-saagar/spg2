@@ -92,6 +92,7 @@ GEM
       irb (>= 1.5.0)
       reline (>= 0.3.1)
     diff-lcs (1.5.0)
+    diffy (3.4.2)
     dockerfile-rails (1.4.1)
       rails
     domain_name (0.5.20190701)
@@ -316,6 +317,7 @@ DEPENDENCIES
   capybara
   contentful
   debug
+  diffy
   dockerfile-rails (>= 1.4)
   dotenv-rails
   factory_bot_rails
