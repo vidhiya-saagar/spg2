@@ -43,6 +43,18 @@ class Chapter < ApplicationRecord
     Rails.logger.debug info
   end
 
+  def copy_paste_artwork_alt_text
+    info = <<~HEREDOC
+      {https://spg.dev/chapters/#{self.id}}
+
+      Artwork for chapter #{self.number} of #{self.book.en_title}, titled: “#{self.en_title}.”
+
+      #{self.en_short_summary}
+    HEREDOC
+
+    Rails.logger.debug info
+  end
+
   def csv_rows
     file_path = "lib/imports/#{self.book.sequence}/#{self.number}.csv"
 

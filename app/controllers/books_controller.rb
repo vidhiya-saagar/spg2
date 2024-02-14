@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class BooksController < ApplicationController
+  # NOTE: Remember to see .jbuilder
   def index
     @books = Book.all
   end
