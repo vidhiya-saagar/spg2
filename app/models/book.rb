@@ -8,9 +8,9 @@ class Book < ApplicationRecord
   # @example `@books = Book.released`
   # @return [ActiveRecord::Relation] Set of released Books.
   if Rails.env.production?
-    scope :released, -> { all }
-  else
     scope :released, -> { where.not(:en_short_summary => nil) }
+  else
+    scope :released, -> { all }
   end
 
   def last_chapter
