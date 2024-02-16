@@ -27,7 +27,7 @@ module Spg2
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
-        origins 'https://spg.dev', /\A.*\.netlify\.app\z/, 'localhost:3000', 'https://beta.spg.dev', /\A.*\.vercel\.\z/
+        origins 'https://spg.dev', /\A.*\.netlify\.app\z/, 'localhost:3000', 'https://beta.spg.dev', /\A.*\.vercel\..*\z/
 
         resource '*',
           headers: :any,
