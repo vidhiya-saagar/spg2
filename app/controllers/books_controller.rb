@@ -3,10 +3,10 @@
 class BooksController < ApplicationController
   # NOTE: Remember to see .jbuilder
   def index
-    @books = Book.all
+    @books = Book.released
   end
 
   def show
-    @book = Book.find(params[:id])
+    @book = Book.released.find(params[:id])
   end
 end

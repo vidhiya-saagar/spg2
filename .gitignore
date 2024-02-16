@@ -33,3 +33,5 @@ lib/assets/*.csv
 lib/imports/*/*.csv
 
 node_modules
+
+*.csv

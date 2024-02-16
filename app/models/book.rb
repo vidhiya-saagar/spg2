@@ -4,6 +4,15 @@ require 'csv'
 class Book < ApplicationRecord
   has_many :chapters, :dependent => :destroy
 
+  # @brief Returns the released `Book`s
+  # @example `@books = Book.released`
+  # @return [ActiveRecord::Relation] Set of released Books.
+  if Rails.env.production?
+    scope :released, -> { all }
+  else
+    scope :released, -> { where.not(:en_short_summary => nil) }
+  end
+
   def last_chapter
     return self.chapters.last
   end
