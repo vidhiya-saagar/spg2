@@ -7,7 +7,6 @@ Rails.application.routes.draw do
   get '/chapters/:id', to: 'chapters#show'
   get '/chapters/:id/content', to: 'chapters#content'
   get '/chapters/:id/kathas', to: 'chapters#kathas'
-  post '/chapters/webhook', to: 'chapters#webhook'
 
   # Book routes
   get '/books', to: 'books#index'
