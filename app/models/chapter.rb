@@ -4,6 +4,7 @@ class Chapter < ApplicationRecord
   belongs_to :book
   has_many :chhands, :dependent => :destroy
   has_many :pauris, :dependent => :destroy
+  has_many :pauri_translations, :through => :pauris
   has_many :tuks, :through => :pauris
   has_many :chapter_kathas, :dependent => :destroy
   has_many :kathas, :through => :chapter_kathas

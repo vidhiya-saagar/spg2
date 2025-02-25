@@ -3,14 +3,16 @@
 Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  resources :chapters, :only => [:show] do 
-    get 'content', on: :member
-    get 'kathas', on: :member
-  end
-  
-  resources :books, :only => [:index, :show]
+  # Chapter routes
+  get '/chapters/:id', to: 'chapters#show'
+  get '/chapters/:id/content', to: 'chapters#content'
+  get '/chapters/:id/kathas', to: 'chapters#kathas'
+  post '/chapters/webhook', to: 'chapters#webhook'
 
-  resources :books do
-    resources :chapters, :only => [:index]
-  end
+  # Book routes
+  get '/books', to: 'books#index'
+  get '/books/:id', to: 'books#show'
+  
+  # Nested book chapters route
+  get '/books/:book_id/chapters', to: 'chapters#index'
 end
