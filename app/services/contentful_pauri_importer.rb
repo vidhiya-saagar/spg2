@@ -53,8 +53,24 @@ class ContentfulPauriImporter
   #   Returns an array of JSON objects like this:
   #   [{id: "6fy52qIYDK8EyisyaaBe4o", entry_name: "Book 1 Chapter 1 Pauri 13"}, {...}, {...}]
   #   @entries = ContentfulPauriImporter.new.entries
+  # def entries
+  #   return @client.entries(:content_type => 'pauriFootnote').map { |e| { :id => e.id, :entry_name => e.entry_name } }
+  # end
+
   def entries
-    return @client.entries(:content_type => 'pauriFootnote').map { |e| { :id => e.id, :entry_name => e.entry_name } }
+    all_entries = []
+    limit = 1000
+    skip = 0
+    total = 1
+
+    while all_entries.size < total
+      response = @client.entries(:content_type => 'pauriFootnote', :limit => limit, :skip => skip)
+      total = response.total
+      all_entries += response.items.map { |e| { :id => e.id, :entry_name => e.entry_name } }
+      skip += limit
+    end
+
+    return all_entries
   end
 
   # ContentfulPauriImporter.new.latest_entries

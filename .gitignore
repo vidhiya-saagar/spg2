@@ -35,3 +35,4 @@ lib/imports/*/*.csv
 node_modules
 
 *.csv
+.vscode/*

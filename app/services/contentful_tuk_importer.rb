@@ -66,6 +66,7 @@ class ContentfulTukImporter
 
   # ContentfulTukImporter.new.import_latest_entries
   def import_latest_entries
+    # new_entries = self.entries
     new_entries = self.latest_entries
     new_entries.each do |e|
       metadata = self.extract_info(e[:entry_name])
