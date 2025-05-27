@@ -4,11 +4,23 @@ This folder contains service classes for importing and synchronizing data relate
 
 ---
 
+## `GranthImporter`
+
+This one isn't used anymore. It was used ONE TIME to seed the DB.
+
+---
+
 ## `ChapterImporterService`
 
-> 
+> The *most* used one
 
 **Purpose:**
+We have CSV files of chapters we are translating. This is what they look like:
+
+<img width="1020" alt="Screenshot of Google Spreadsheet of a translator editing Chapter 23 of Rut 1 of the Suraj Prakash Granth" src="https://github.com/user-attachments/assets/a5dda73b-c0b2-4963-b34f-9da4c160d89a" />
+
+We want to then import the **translations** (and maybe some other stuff)! We need a script that can import that new information... (The chapter already exists... just not the translations and stuff). 
+
 Imports and updates chapter data from a CSV source for a given book and chapter. Handles updating chapter titles, pauris, tuks, and their translations interactively, with user prompts for conflicts.
 
 **How It Works:**
@@ -38,6 +50,8 @@ The CSV file should have the following columns:
 - `Assigned_Singh` or `Translator`: String | NULL
 - `Extended_Meaning`: String | NULL
 ---
+
+**NOTE**: These CSVs in the `lib/imports` folder are not uploaded to GitHub yet. I will do that soon.
 
 ## `ContentfulPauriImporter`
 
@@ -90,12 +104,6 @@ importer.import_latest_entries
 ```
 
 **Note:** Due to Contentful's limit of returning only 100 entries per API call, the service implements pagination to fetch all entries.
-
----
-
-## `GranthImporter`
-
-This one isn't used anymore. It was used ONE TIME to seed the DB.
 
 ---
 
