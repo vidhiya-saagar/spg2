@@ -33,6 +33,23 @@ We are restructuring the database to include:
 
 Yes, I know this isn't a API or a minified Rails project; we may consider adding the front-end admin section on here, instead of the old SPG repo.
 
+## Services + Docs
+
+Our application includes several powerful services that help manage and import content. These services are the backbone of our content management system, making it easy to:
+
+You can find the documentation in the [`services`](app/services/README.md) folder.
+
+
+- Import translations, summaries, and artwork from CSV files
+- Manage footnotes through Contentful CMS
+- Handle both stanza-level (Pauri) and line-level (Tuk) content
+
+### For Translators and Content Editors
+
+If you're working on translations or content:
+1. Check out our [Chapter Importer Guide](app/services/README.md#chapterimporterservice) to learn how to import your translations
+2. Learn about [managing footnotes](app/services/README.md#how-to-contribute-footnotes-contentful-stuff) through our Contentful integration
+
 ## Goals
 
 The number 1 goal should always be to be a slave of Sri Nanak Guru Gobind Singh Ji and make a beautiful application to honour the *Maha* Kavi Kaviraj Bhai Santokh Singh Ji and his masterpiece, Gurpratap Suraj. 
