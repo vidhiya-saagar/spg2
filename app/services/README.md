@@ -6,6 +6,8 @@ This folder contains service classes for importing and synchronizing data relate
 
 ## `ChapterImporterService`
 
+> 
+
 **Purpose:**
 Imports and updates chapter data from a CSV source for a given book and chapter. Handles updating chapter titles, pauris, tuks, and their translations interactively, with user prompts for conflicts.
 
@@ -97,7 +99,92 @@ This one isn't used anymore. It was used ONE TIME to seed the DB.
 
 ---
 
-## Notes
-- All importers assume the relevant models (Book, Chapter, Pauri, Tuk, etc.) already exist and are properly configured.
-- For Contentful importers, ensure the correct environment variables for Contentful API access are set.
-- Some services (like `ChapterImporterService`) are interactive and require user input during execution. 
+Here's an updated version of your README documentation, incorporating the screenshot and all your additional instructions clearly.
+
+---
+
+## `ContentfulPauriImporter`
+
+### **Purpose**
+
+Imports custom pauri footnotes from Contentful CMS into the Rails application. Ensures idempotency by only importing new entries. Associates Contentful footnotes with the correct `Pauri` in the database.
+
+---
+
+### **Contentful Integration**
+
+* **Content Type IDs**:
+
+  * `pauriFootnote`
+  * `tukFootnote`
+* **Rails Models**:
+
+  * `PauriFootnote.contentful_entry_id`
+  * `TukFootnote.contentful_entry_id`
+
+---
+
+### **Contentful Fields**
+
+Each entry includes multiple optional fields for different contributors. The fields imported include:
+
+* `contentful_entry_id`
+* `entryName`
+* `vidhiyaSaagarContent`
+* `vidhiyaSaagarMedia`
+* `isATranslationOfBhaiVirSingh`
+* `kamalpreetSinghContent`
+* `kamalpreetSinghMedia`
+* `manglacharanContent`
+* `manglacharanMedia`
+
+---
+
+### **Usage Example**
+
+```ruby
+importer = ContentfulPauriImporter.new
+importer.import_latest_entries
+```
+
+---
+
+### **Naming Convention**
+
+Entries in Contentful should follow the format:
+
+* For Pauri: `Book 1 Chapter 42 Pauri 1`
+* For Tuk: `Book 1 Chapter 42 Tuk 3.1`
+
+---
+
+## **How to Contribute Footnotes (Contentful Stuff)**
+
+#### **1. Get Access**
+
+To add or edit footnotes, you must be a member of the **Vidhiya Saagar** organization in Contentful.
+
+Currently, only **@dsomel21** has access. You can request an invite from him if you'd like to contribute. We are on the free tier of Contenful. 
+
+#### **2. Navigating the Content**
+
+Once inside Contentful, go to the **"All Content"** view. You’ll see entries organized by naming convention, content type (`PauriFootnote`, `TukFootnote`), and status.
+
+Here's what it looks like:
+
+![All Content Screenshot](https://github.com/user-attachments/assets/07774579-59b0-42f0-bf86-e4898665cb20)
+
+#### **3. Entry Types**
+
+We have two custom entry types:
+
+* **PauriFootnote** – Used for entire stanzas
+* **TukFootnote** – Used for specific lines or sub-sections within a Pauri
+
+Make sure to select the correct type when creating a new entry.
+
+---
+
+### ✅ Status
+
+Each footnote must be **Published** to be picked up by the importer. Then, when we run the `ContentfulPauriImporter` or `ContentfulTukImporter`, it will add them in our app. 
