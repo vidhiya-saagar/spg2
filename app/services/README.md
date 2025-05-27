@@ -17,7 +17,7 @@ This one isn't used anymore. It was used ONE TIME to seed the DB.
 **Purpose:**
 We have CSV files of chapters we are translating. This is what they look like:
 
-<img width="1020" alt="Screenshot of Google Spreadsheet of a translator editing Chapter 23 of Rut 1 of the Suraj Prakash Granth" src="https://github.com/user-attachments/assets/a5dda73b-c0b2-4963-b34f-9da4c160d89a" />
+<img width="1020" alt="Screenshot of Google Spreadsheet of a translator editing Chapter 23 of Rut 1 of the Suraj Prakash Granth" src="https://github.com/user-attachments/assets/dab435c8-81e2-4990-be2b-b7e248fd17c3" />
 
 We want to then import the **translations** (and maybe some other stuff)! We need a script that can import that new information... (The chapter already exists... just not the translations and stuff). 
 
