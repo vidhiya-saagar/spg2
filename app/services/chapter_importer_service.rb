@@ -32,7 +32,15 @@ class ChapterImporterService
   end
 
   def process_row(row)
+    # `Chapter_Name`
     validate_and_update_chapter_title(row)
+
+    # `__Chapter_Title_EN`
+    update_chapter_title_en(row)
+
+    # `__Short_Summary_EN`, `Long_Summary_EN`
+    update_summary(row)
+
     process_pauri(row)
     process_tuk(row)
     create_tuk_translation(row)
@@ -47,11 +55,22 @@ class ChapterImporterService
               pastel.bold('presently') +
               " '#{chapter.title}'. The CSV says '#{chapter_name}'."
     prompt.say(message, :color => :yellow)
-    answer = prompt.yes?("Do you want to continue and update this title to '#{chapter_name}'?")
+    answer = prompt.yes?("Do you want to continue and update this `title` to '#{chapter_name}'?")
     raise 'Aborted by user' unless answer
 
     chapter.update(:title => chapter_name)
-    Rails.logger.debug pastel.green("✓ Chapter #{chapter_number}'s title updated to '#{chapter_name}'")
+    Rails.logger.debug pastel.green.dim("✓ Chapter #{chapter_number}'s `title` updated to '#{chapter_name}'")
+  end
+
+  def update_chapter_title_en(row)
+    chapter_title_en = row['__Chapter_Title_EN'].try(:strip)
+
+    return if chapter.en_title == chapter_title_en || chapter_title_en.blank?
+    chapter.update(:en_title => chapter_title_en)
+    Rails.logger.debug pastel.on_green("✓ Chapter #{chapter_number}'s `en_title` updated to '#{chapter_title_en}'")
+  end
+
+  def update_summary(row)
   end
 
   def process_pauri(row)
@@ -118,7 +137,7 @@ class ChapterImporterService
   def upsert_tuk_translation(translation, translator)
     @tuk_translation = @tuk.translation || TukTranslation.new(:tuk_id => @tuk.id)
     @tuk_translation.update(:en_translation => translation, :en_translator => translator)
-    Rails.logger.debug pastel.green("✓ `TukTranslation` created or updated for Tuk #{translation} - Pauri # #{@pauri.number}")
+    # Rails.logger.debug pastel.green("✓ `TukTranslation` created or updated for Tuk #{translation} - Pauri # #{@pauri.number}")
   end
 
   def create_pauri_translation(row)
@@ -127,6 +146,6 @@ class ChapterImporterService
 
     pauri_translation = @pauri.translation || PauriTranslation.new(:pauri_id => @pauri.id)
     pauri_translation.update(:en_translation => pauri_translation_en, :en_translator => row['Assigned_Singh'].try(:strip))
-    Rails.logger.debug pastel.green("✓ `PauriTranslation` created or updated for Pauri # #{@pauri.number}")
+    # Rails.logger.debug pastel.green("✓ `PauriTranslation` created or updated for Pauri # #{@pauri.number}")
   end
 end
