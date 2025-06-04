@@ -38,7 +38,7 @@ class ChapterImporterService
     # `__Chapter_Title_EN`
     update_chapter_title_en(row)
 
-    # `__Short_Summary_EN`, `Long_Summary_EN`
+    # `__Short_Summary_EN`, `__Long_Summary_EN`
     update_summary(row)
 
     process_pauri(row)
@@ -48,29 +48,40 @@ class ChapterImporterService
   end
 
   def validate_and_update_chapter_title(row)
-    chapter_name = row['Chapter_Name'].try(:strip)
-    return if chapter.title == chapter_name
+    title = row['Chapter_Name'].try(:strip)
+    return if chapter.title == title
 
     message = "The name in Book #{book.sequence}, Chapter #{chapter_number} is " +
               pastel.bold('presently') +
-              " '#{chapter.title}'. The CSV says '#{chapter_name}'."
+              " '#{chapter.title}'. The CSV says '#{title}'."
     prompt.say(message, :color => :yellow)
-    answer = prompt.yes?("Do you want to continue and update this `title` to '#{chapter_name}'?")
+    answer = prompt.yes?("Do you want to continue and update this `title` to '#{title}'?")
     raise 'Aborted by user' unless answer
 
-    chapter.update(:title => chapter_name)
-    Rails.logger.debug pastel.green.dim("✓ Chapter #{chapter_number}'s `title` updated to '#{chapter_name}'")
+    chapter.update(:title => title)
+    Rails.logger.debug pastel.green.dim("✓ Chapter #{chapter_number}'s `title` updated to '#{title}'")
   end
 
   def update_chapter_title_en(row)
-    chapter_title_en = row['__Chapter_Title_EN'].try(:strip)
+    en_title = row['__Chapter_Title_EN'].try(:strip)
 
-    return if chapter.en_title == chapter_title_en || chapter_title_en.blank?
-    chapter.update(:en_title => chapter_title_en)
-    Rails.logger.debug pastel.on_green("✓ Chapter #{chapter_number}'s `en_title` updated to '#{chapter_title_en}'")
+    return if chapter.en_title == en_title || en_title.blank?
+    chapter.update(:en_title => en_title)
+    Rails.logger.debug pastel.on_green("✓ Chapter #{chapter_number}'s `en_title` updated to '#{en_title}'")
   end
 
   def update_summary(row)
+    en_short_summary = row['__Short_Summary_EN'].try(:strip)
+    if en_short_summary && chapter.en_short_summary != en_short_summary
+      chapter.update(:en_short_summary => en_short_summary)
+      Rails.logger.debug pastel.on_green("✓ Chapter #{chapter_number}'s `en_short_summary` updated")
+    end
+
+    en_long_summary = row['__Long_Summary_EN'].try(:strip)
+    if en_long_summary && chapter.en_long_summary != en_long_summary
+      chapter.update(:en_long_summary => en_long_summary)
+      Rails.logger.debug pastel.on_green("✓ Chapter #{chapter_number}'s `en_long_summary` updated")
+    end
   end
 
   def process_pauri(row)

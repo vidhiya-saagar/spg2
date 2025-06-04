@@ -93,8 +93,11 @@ Layout/FirstHashElementIndentation:
 Style/WordArray:
   EnforcedStyle: brackets
 
-Layout/EmptyLineAfterGuardClause:
+Style/GuardClause:
   Enabled: false
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false  
 
 RSpec/ExpectChange:
   Enabled: false
