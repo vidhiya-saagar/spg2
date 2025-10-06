@@ -23,7 +23,10 @@ Bundler.require(*Rails.groups)
 module Spg2
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 7.0
+    config.load_defaults 8.0
+    
+    # Fix deprecation warning for timezone handling
+    config.active_support.to_time_preserves_timezone = :zone
 
     config.middleware.insert_before 0, Rack::Cors do
       allow do
