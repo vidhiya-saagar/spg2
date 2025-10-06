@@ -3,7 +3,7 @@
 
 # Base stage
 # We're starting from an official Ruby Docker image. It is based on Alpine, which is a lightweight Linux distribution.
-FROM ruby:3.2.1-alpine AS base
+FROM ruby:3.4.5-alpine AS base
 
 # All the operations following this instruction will be performed in the /app directory in the Docker image filesystem.
 WORKDIR /app

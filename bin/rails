@@ -1,4 +1,4 @@
-#!/Users/dilraj/.rvm/rubies/ruby-3.2.1/bin/ruby
+#!/Users/dilraj/.rvm/rubies/ruby-3.4.5/bin/ruby
 # frozen_string_literal: true
 
 APP_PATH = File.expand_path('../config/application', __dir__)
