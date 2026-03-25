@@ -1,4 +1,4 @@
-#!/Users/dilraj/.rvm/rubies/ruby-3.4.5/bin/ruby
+#!/usr/bin/env ruby
 # frozen_string_literal: true
 
 require 'fileutils'
