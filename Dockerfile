@@ -1,62 +1,104 @@
-# We are creating a multi-stage Docker build. 
-# This is useful for creating lighter production images as we can exclude dependencies and files not necessary for running the application.
+# syntax=docker/dockerfile:1
+# =============================================================================
+# SPG2 – Multi-stage Dockerfile
+#
+# Targets
+#   development  – full gem set, live-reload friendly (used by docker-compose)
+#   builder      – compiles production gems + bootsnap cache
+#   production   – lean runtime image shipped to Fly.io / any registry
+# =============================================================================
 
-# Base stage
-# We're starting from an official Ruby Docker image. It is based on Alpine, which is a lightweight Linux distribution.
-FROM ruby:3.4.5-alpine AS base
+ARG RUBY_VERSION=3.4.5
 
-# All the operations following this instruction will be performed in the /app directory in the Docker image filesystem.
+# ---------------------------------------------------------------------------
+# base – shared OS packages for all stages
+# ---------------------------------------------------------------------------
+FROM ruby:${RUBY_VERSION}-alpine AS base
+
+# build-base  : gcc/make needed to compile native gem extensions
+# sqlite-dev  : headers for the sqlite3 gem
+# nodejs      : required by importmap / tailwindcss-rails at boot
+# tzdata      : timezone support used by ActiveSupport
+# libffi-dev  : required by llhttp-ffi (transitive dep of contentful → http)
+# yaml-dev    : required by psych (Ruby YAML parser)
+RUN apk --no-cache add \
+      build-base \
+      sqlite-dev \
+      nodejs \
+      tzdata \
+      libffi-dev \
+      yaml-dev
+
 WORKDIR /app
 
-# Run is used to execute a command during the building of a Docker image.
-# apk is a package management tool included in Alpine Linux. --update means update the local package database before installing the packages.
-# build-base is a meta-package that installs GCC, libc, and other compilation tools.
-# sqlite-dev installs the SQLite development files.
-# nodejs is the JavaScript runtime.
-# tzdata is time zone data, which is often required by various Ruby libraries.
-RUN apk --update add \
-    build-base \
-    sqlite-dev \
-    nodejs \
-    tzdata
+# ---------------------------------------------------------------------------
+# development – all gems (dev + test included), mounted source code
+# ---------------------------------------------------------------------------
+FROM base AS development
 
-# Copies the Gemfile and Gemfile.lock from your local filesystem into the Docker image.
-# This is needed for the next step, installing Ruby dependencies.
 COPY Gemfile Gemfile.lock ./
 
-# Bundle install is a command to install Ruby dependencies. 
-# Here, we're also configuring bundler to install the gems locally into vendor/bundle (for easier copying between stages)
-# and we're setting it up to be deployment-ready.
-# --jobs=4 means use 4 workers for parallel installation.
+# Install every gem group into the default system path so that a volume-mount
+# of the source code (`.:/app`) does not overwrite the installed gems.
 RUN gem install bundler && \
-    bundle config set path 'vendor/bundle' && \
-    bundle config set deployment 'true' && \
-    bundle install --jobs=4 --without development test
+    bundle install --jobs 4
 
-# Builder stage
-# This stage takes the previous stage as its base.
-# It's used to build our application without polluting the final stage with unnecessary files and dependencies.
-FROM base AS builder
-
-# Copy all files from the local source directory to the WORKDIR in the image.
 COPY . .
 
-# Final stage
-# This is the stage that will be used to run the application.
-# It starts from the base stage and includes only the necessary files.
-FROM base
+ENV RAILS_ENV=development \
+    PORT=1843
 
-# Add additional dependencies that are only required for running the application.
-RUN apk --update add \
-    sqlite-libs \
-    nodejs
+EXPOSE 1843
 
-# Copy necessary files and directories from the builder stage to the final image.
+CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "1843"]
+
+# ---------------------------------------------------------------------------
+# builder – production-only gems + precompiled bootsnap cache
+# ---------------------------------------------------------------------------
+FROM base AS builder
+
+COPY Gemfile Gemfile.lock ./
+
+# Install gems to the default system path (/usr/local/bundle).
+# We do NOT use --local path vendor/bundle here because parallel gem
+# compilation can fail when a native-extension gem (e.g. llhttp-ffi) tries
+# to load a dependency (ffi) that hasn't finished installing yet.
+RUN gem install bundler && \
+    bundle config set --local without 'development test' && \
+    bundle install --jobs 1
+
+COPY . .
+
+# Warm up bootsnap's load-path cache so the first request isn't slow
+RUN bundle exec bootsnap precompile app/ lib/
+
+# ---------------------------------------------------------------------------
+# production – minimal runtime, no build tooling
+# ---------------------------------------------------------------------------
+FROM ruby:${RUBY_VERSION}-alpine AS production
+
+# Runtime-only native libs (no -dev headers needed)
+RUN apk --no-cache add \
+      sqlite-libs \
+      nodejs \
+      tzdata \
+      libffi \
+      yaml
+
+WORKDIR /app
+
+# Copy installed gems from the builder's system gem path
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+# Copy the application code
 COPY --from=builder /app /app
 
-# This environment variable is used to set the Rails environment to production.
-ENV RAILS_ENV=production
+ENV RAILS_ENV=production \
+    RAILS_LOG_TO_STDOUT=true \
+    RAILS_SERVE_STATIC_FILES=true \
+    PORT=80
 
-# The CMD instruction defines the command that will be run when a container is started from the Docker image.
-# Here, we're starting the Rails server on port 80 and binding it to all interfaces.
-CMD ["bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "80"]
+EXPOSE 80
+
+# Prepare the database then hand off to the main process
+ENTRYPOINT ["/app/bin/docker-entrypoint"]
+CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0", "-p", "80"]

@@ -1,0 +1,48 @@
+name: spg2
+
+# =============================================================================
+# Local development stack
+#
+# Usage:
+#   docker compose up           – start web + css watcher
+#   docker compose run web bash – open a shell
+#   docker compose run web bundle exec rails db:seed
+#
+# The web service mounts your local source code so edits are reflected
+# immediately without rebuilding the image.
+# =============================================================================
+
+services:
+  web:
+    build:
+      context: .
+      target: development
+    command: bin/rails server -b 0.0.0.0 -p 1843
+    ports:
+      - "1843:1843"
+    volumes:
+      # Live-reload: mount source code into the container
+      - .:/app
+      # Persist the SQLite database across container restarts
+      - sqlite_data:/app/db
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      RAILS_ENV: development
+      PORT: "1843"
+
+  css:
+    build:
+      context: .
+      target: development
+    command: bin/rails tailwindcss:watch
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+    environment:
+      RAILS_ENV: development
+
+volumes:
+  sqlite_data:

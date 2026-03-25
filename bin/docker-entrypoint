@@ -1,0 +1,8 @@
+#!/bin/sh
+# Docker entrypoint – runs before the main container process.
+# Ensures the SQLite database is created and migrations are applied.
+set -e
+
+bundle exec rails db:prepare
+
+exec "$@"

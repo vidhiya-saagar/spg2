@@ -1,4 +1,4 @@
-name: Ruby CI
+name: CI
 
 on:
   pull_request:
@@ -7,18 +7,42 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  # ---------------------------------------------------------------------------
+  # Lint – RuboCop static analysis
+  # ---------------------------------------------------------------------------
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4.5
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
-      - name: Rubocop
-        run: bundle exec rubocop
+          bundler-cache: true
+
+      - name: RuboCop
+        run: bundle exec rubocop --parallel
+
+  # ---------------------------------------------------------------------------
+  # Test – RSpec suite
+  # ---------------------------------------------------------------------------
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.5
+          bundler-cache: true
+
+      - name: Prepare test database
+        run: bundle exec rails db:prepare
+
+      - name: Run RSpec
+        run: bundle exec rspec

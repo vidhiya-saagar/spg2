@@ -1,5 +1,30 @@
-node_modules
-tmp
-vendor
-log
+# Version control
 .git
+.gitignore
+
+# Bundler local installs (the Dockerfile installs gems inside the image)
+vendor/bundle
+.bundle
+
+# Node modules
+node_modules
+
+# Rails runtime artifacts
+tmp
+log
+*.log
+
+# SQLite databases – use a named volume or external DB in containers
+db/*.sqlite3
+
+# Test / CI artifacts
+coverage
+.rspec_status
+
+# macOS
+.DS_Store
+
+# Editor
+.idea
+.vscode
+*.swp

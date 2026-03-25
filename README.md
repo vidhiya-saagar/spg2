@@ -9,18 +9,51 @@ The most important thing you will find in here, is:
 1. The database and schema
 2. The resources we return in the JSON (`/books/:id.json`, `/chapters/:id.json`)
 
+---
+
 ## Getting Started
 
-### Prerequisites
+### Option A — Docker (recommended)
 
-- Ruby 3.4.5
-- Bundler 2.4.7
-- sqlite3
+**Prerequisites:** Docker and Docker Compose.
 
-1. Clone the Repo
-2. Switch to Ruby version `3.4.5` e.g. `rvm use 3.4.5`
-3. `bundle install`
-4. `rake db:prepare`
+```bash
+# 1. Clone the repo
+git clone git@github.com:vidhiya-saagar/spg2.git && cd spg2
+
+# 2. Copy environment variables
+cp .env.example .env   # fill in RAILS_MASTER_KEY if you have it
+
+# 3. Start the app (web + Tailwind CSS watcher)
+docker compose up
+
+# App is available at http://localhost:1843
+```
+
+Useful compose commands:
+
+```bash
+docker compose run web bundle exec rails db:seed      # seed the database
+docker compose run web bundle exec rails console      # Rails console
+docker compose run web bundle exec rspec              # run tests
+docker compose down -v                                # stop and remove volumes
+```
+
+### Option B — Local (Ruby + Bundler)
+
+**Prerequisites:** Ruby 3.4.5, Bundler, sqlite3.
+
+```bash
+rvm use 3.4.5        # or: rbenv local 3.4.5
+bundle install
+cp .env.example .env
+bin/rails db:prepare
+bin/dev              # starts Puma + Tailwind watcher via Procfile.dev
+```
+
+App is available at `http://localhost:1843`.
+
+---
 
 ## Services + Docs
 
@@ -46,31 +79,42 @@ If you're working on translations or content:
    [managing footnotes](app/services/README.md#how-to-contribute-footnotes-contentful-stuff)
    through our Contentful integration
 
-## Goals
+---
 
-The number 1 goal should always be to be a slave of Sri Nanak Guru Gobind Singh
-Ji and make a beautiful application to honour the _Maha_ Kavi Kaviraj Bhai
-Santokh Singh Ji and his masterpiece, Gurpratap Suraj.
+## CI / CD
 
-Not pushing a crappy app. The code might be questionable, tho, lol.
+Every pull request and push to `main` runs:
 
-### Short Term
+| Workflow | What it does |
+|---|---|
+| **CI** (`.github/workflows/ruby-ci.yml`) | RuboCop lint + RSpec test suite |
+| **Docker** (`.github/workflows/docker.yml`) | Builds the production image; pushes to GHCR on merge to `main` or on version tags |
 
-- [x] Finish manual entry, parsing for the Suraj Prakash Granth `.pdf` files
-- [x] Recreate new DB that can support the _main_ features (footnotes, unicode)
-- [x] Add content to DB, like things from Raas 12, etc.
+The production image is published to
+`ghcr.io/vidhiya-saagar/spg2` and tagged with the branch name, semantic
+version, and short SHA.
 
-### Long Term
+---
 
-(This is not in order. N'or is it a refined list).
+## Docker Image Architecture
 
-- [x] Can we use this database to replace the one on https://spg.dev/books
-- [x] Can we easily import chapters that have been translated, etc?
-- [] Work with [ShabadOS](https://github.com/shabados) so we can researchers and
-  scholars search engine access
-- [x] Work with [Jonathon Collie](https://www.jonathancollie.com/) to make the
-      new SPG front-end app.
-- [x] Create a footnote, richtext editor.
+The `Dockerfile` has three named targets:
+
+| Target | Purpose | Used by |
+|---|---|---|
+| `development` | All gems, live-reload-friendly | `docker compose up` |
+| `builder` | Production gems + bootsnap precompile | intermediate |
+| `production` | Lean runtime, no build tools | Fly.io / GHCR |
+
+Build a specific target manually:
+
+```bash
+# Development image
+docker build --target development -t spg2:dev .
+
+# Production image
+docker build --target production -t spg2:prod .
+```
 
 ---
 
@@ -116,3 +160,29 @@ production environment will be identical to its behavior in the development
 environment.
 
 ---
+
+## Goals
+
+The number 1 goal should always be to be a slave of Sri Nanak Guru Gobind Singh
+Ji and make a beautiful application to honour the _Maha_ Kavi Kaviraj Bhai
+Santokh Singh Ji and his masterpiece, Gurpratap Suraj.
+
+Not pushing a crappy app. The code might be questionable, tho, lol.
+
+### Short Term
+
+- [x] Finish manual entry, parsing for the Suraj Prakash Granth `.pdf` files
+- [x] Recreate new DB that can support the _main_ features (footnotes, unicode)
+- [x] Add content to DB, like things from Raas 12, etc.
+
+### Long Term
+
+(This is not in order. N'or is it a refined list).
+
+- [x] Can we use this database to replace the one on https://spg.dev/books
+- [x] Can we easily import chapters that have been translated, etc?
+- [] Work with [ShabadOS](https://github.com/shabados) so we can researchers and
+  scholars search engine access
+- [x] Work with [Jonathon Collie](https://www.jonathancollie.com/) to make the
+      new SPG front-end app.
+- [x] Create a footnote, richtext editor.
