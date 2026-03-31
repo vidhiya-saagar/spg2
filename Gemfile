@@ -82,7 +82,7 @@ group :test do
 end
 
 gem 'contentful'
-gem 'csv'
 gem 'rack-cors', '~> 3.0'
+gem 'csv'
 
 gem 'dockerfile-rails', '>= 1.4', :group => :development
