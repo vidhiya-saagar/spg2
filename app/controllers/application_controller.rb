@@ -3,22 +3,28 @@
 require 'active_model/validations'
 
 class ApplicationController < ActionController::Base
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  rescue_from ActiveRecord::RecordNotFound, :with => :not_found
 
   private
 
   def not_found
-    render json: { error: 'Not found' }, status: :not_found
+    render :json => { :error => 'Not found' }, :status => :not_found
   end
 
-  # Call this in actions where data changes infrequently.
-  # Sends Cache-Control and, if the client's ETag/Last-Modified matches, returns 304.
+  # Sets Cache-Control and handles conditional GET (ETag + Last-Modified).
+  # Returns 304 Not Modified when the client's cached version is still current.
   #
   # Usage:
-  #   cache_and_validate(@book)                   # single record
-  #   cache_and_validate(@books, max_age: 300)    # collection with custom TTL
-  def cache_and_validate(resource, max_age: 3600)
+  #   set_cache(@book)                          # single record
+  #   set_cache(@books, :max_age => 300)        # collection with custom TTL
+  #   set_cache(:etag => key, :last_modified => ts)  # explicit ETag/timestamp
+  def set_cache(resource = nil, max_age: 3600, **fresh_when_opts)
     response.set_header('Cache-Control', "public, max-age=#{max_age}, stale-while-revalidate=60")
-    fresh_when(resource)
+
+    if resource && fresh_when_opts.empty?
+      fresh_when(resource, :public => true)
+    else
+      fresh_when(fresh_when_opts.merge(:public => true))
+    end
   end
 end

@@ -3,11 +3,11 @@
 class BooksController < ApplicationController
   def index
     @books = Book.released
-    cache_and_validate(@books)
+    set_cache(@books)
   end
 
   def show
     @book = Book.released.find(params[:id])
-    cache_and_validate(@book)
+    set_cache(@book)
   end
 end
