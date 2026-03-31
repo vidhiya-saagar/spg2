@@ -1,0 +1,548 @@
+openapi: 3.0.3
+
+info:
+  title: SPG API
+  description: |
+    REST API for Sri Panth Granthi — books, chapters, pauris, tuks, and kathas.
+
+    **Caching**: All endpoints support conditional GET via `ETag` and `Last-Modified`.
+    Send `If-None-Match` / `If-Modified-Since` headers to get `304 Not Modified` when data hasn't changed.
+
+    **Format**: All responses are `application/json`. No `.json` suffix required.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://api.spg.dev
+    description: Production
+
+tags:
+  - name: Books
+    description: Top-level scripture volumes
+  - name: Chapters
+    description: Chapters within a book
+  - name: Kathas
+    description: Audio recordings (kathas) for a chapter
+
+paths:
+
+  # ── Books ──────────────────────────────────────────────────────────────────
+
+  /books:
+    get:
+      summary: List all released books
+      operationId: listBooks
+      tags: [Books]
+      parameters:
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/IfModifiedSince'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/LastModified'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [books]
+                properties:
+                  books:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Book'
+        '304':
+          $ref: '#/components/responses/NotModified'
+
+  /books/{id}:
+    get:
+      summary: Get a single book
+      operationId: getBook
+      tags: [Books]
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/IfModifiedSince'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/LastModified'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [book]
+                properties:
+                  book:
+                    $ref: '#/components/schemas/Book'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /books/{book_id}/chapters:
+    get:
+      summary: List released chapters for a book
+      operationId: listChapters
+      tags: [Chapters]
+      parameters:
+        - name: book_id
+          in: path
+          required: true
+          schema:
+            type: integer
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/IfModifiedSince'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/LastModified'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [chapters]
+                properties:
+                  chapters:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ChapterSummary'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── Chapters ───────────────────────────────────────────────────────────────
+
+  /chapters/{id}:
+    get:
+      summary: Get chapter metadata
+      operationId: getChapter
+      tags: [Chapters]
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/IfModifiedSince'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/LastModified'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [chapter]
+                properties:
+                  chapter:
+                    $ref: '#/components/schemas/ChapterDetail'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chapters/{id}/content:
+    get:
+      summary: Get full chapter content (chhands → pauris → tuks)
+      description: |
+        Returns the complete content tree for a chapter including all chhands,
+        pauris, tuks, translations, and footnotes. This is the heaviest endpoint —
+        cache aggressively on the client.
+      operationId: getChapterContent
+      tags: [Chapters]
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/IfModifiedSince'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/LastModified'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [chapter]
+                properties:
+                  chapter:
+                    $ref: '#/components/schemas/ChapterContent'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chapters/{id}/kathas:
+    get:
+      summary: List kathas (audio recordings) for a chapter
+      operationId: listChapterKathas
+      tags: [Kathas]
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - $ref: '#/components/parameters/IfNoneMatch'
+        - $ref: '#/components/parameters/IfModifiedSince'
+      responses:
+        '200':
+          description: OK
+          headers:
+            ETag:
+              $ref: '#/components/headers/ETag'
+            Last-Modified:
+              $ref: '#/components/headers/LastModified'
+            Cache-Control:
+              $ref: '#/components/headers/CacheControl'
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [kathas]
+                properties:
+                  kathas:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Katha'
+        '304':
+          $ref: '#/components/responses/NotModified'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+# ── Components ───────────────────────────────────────────────────────────────
+
+components:
+
+  # ── Schemas ────────────────────────────────────────────────────────────────
+
+  schemas:
+
+    Book:
+      type: object
+      required: [id, sequence, title, enTitle, numberOfChaptersReleased, slug]
+      properties:
+        id:
+          type: integer
+          example: 1
+        sequence:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: "ਸ੍ਰੀ ਦਸਮ ਗ੍ਰੰਥ"
+        enTitle:
+          type: string
+          example: "Sri Dasam Granth"
+        enShortSummary:
+          type: string
+          nullable: true
+        enSynopsis:
+          type: string
+          nullable: true
+        artworkUrl:
+          type: string
+          nullable: true
+          example: "https://res.cloudinary.com/example/image.jpg"
+        numberOfChaptersReleased:
+          type: integer
+          example: 5
+        slug:
+          type: string
+          example: "sri-dasam-granth"
+
+    ChapterSummary:
+      type: object
+      required: [id, number, title]
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        title:
+          type: string
+        enTitle:
+          type: string
+          nullable: true
+        enShortSummary:
+          type: string
+          nullable: true
+        enLongSummary:
+          type: string
+          nullable: true
+        artworkUrl:
+          type: string
+          nullable: true
+
+    ChapterDetail:
+      type: object
+      required: [id, bookId, number, title]
+      properties:
+        id:
+          type: integer
+        bookId:
+          type: integer
+        number:
+          type: integer
+        title:
+          type: string
+        enTitle:
+          type: string
+          nullable: true
+        enShortSummary:
+          type: string
+          nullable: true
+        enLongSummary:
+          type: string
+          nullable: true
+        artworkUrl:
+          type: string
+          nullable: true
+
+    ChapterContent:
+      type: object
+      required: [id, number, title, book, chhands]
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        title:
+          type: string
+        enTitle:
+          type: string
+          nullable: true
+        enShortSummary:
+          type: string
+          nullable: true
+        artworkUrl:
+          type: string
+          nullable: true
+        book:
+          $ref: '#/components/schemas/EmbeddedBook'
+        chhands:
+          type: array
+          items:
+            $ref: '#/components/schemas/Chhand'
+
+    EmbeddedBook:
+      description: Book fields returned inline within a chapter content response
+      type: object
+      required: [id, sequence, title]
+      properties:
+        id:
+          type: integer
+        sequence:
+          type: integer
+        title:
+          type: string
+        enTitle:
+          type: string
+          nullable: true
+        enShortSummary:
+          type: string
+          nullable: true
+        enSynopsis:
+          type: string
+          nullable: true
+        artworkUrl:
+          type: string
+          nullable: true
+
+    Chhand:
+      type: object
+      required: [id, sequence, name, pauris]
+      properties:
+        id:
+          type: integer
+        sequence:
+          type: integer
+        vaak:
+          type: string
+          nullable: true
+          description: Vaak (opening verse) of this chhand, if any
+        name:
+          type: string
+          description: Name of the chhand type
+          example: "ਚੌਪਈ"
+        pauris:
+          type: array
+          items:
+            $ref: '#/components/schemas/Pauri'
+
+    Pauri:
+      type: object
+      required: [id, number, tuks]
+      properties:
+        id:
+          type: integer
+        number:
+          type: integer
+        translation:
+          $ref: '#/components/schemas/Translation'
+        footnote:
+          $ref: '#/components/schemas/Footnote'
+        tuks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tuk'
+
+    Tuk:
+      type: object
+      required: [id, sequence, content]
+      properties:
+        id:
+          type: integer
+        sequence:
+          type: integer
+        content:
+          type: string
+          description: Normalized Gurmukhi text
+        originalContent:
+          type: string
+          nullable: true
+          description: Original source text before normalization
+        translation:
+          $ref: '#/components/schemas/Translation'
+        footnote:
+          $ref: '#/components/schemas/Footnote'
+
+    Translation:
+      type: object
+      nullable: true
+      properties:
+        enTranslation:
+          type: string
+          nullable: true
+        enTranslator:
+          type: string
+          nullable: true
+
+    Footnote:
+      type: object
+      nullable: true
+      properties:
+        bhaiVirSinghFootnote:
+          type: string
+          nullable: true
+        contentfulEntryId:
+          type: string
+          nullable: true
+          description: Contentful entry ID — fetch enriched content from the CMS using this ID
+
+    Katha:
+      type: object
+      required: [id, isPlaylist]
+      properties:
+        id:
+          type: integer
+        gianiId:
+          type: integer
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        publicUrl:
+          type: string
+          nullable: true
+        isPlaylist:
+          type: boolean
+        soundcloudUrl:
+          type: string
+          nullable: true
+        year:
+          type: integer
+          nullable: true
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          example: "Not found"
+
+  # ── Parameters ─────────────────────────────────────────────────────────────
+
+  parameters:
+
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+
+    IfNoneMatch:
+      name: If-None-Match
+      in: header
+      description: ETag from a previous response. Returns 304 if unchanged.
+      schema:
+        type: string
+
+    IfModifiedSince:
+      name: If-Modified-Since
+      in: header
+      description: Date from a previous Last-Modified header. Returns 304 if unchanged.
+      schema:
+        type: string
+        format: http-date
+
+  # ── Headers ────────────────────────────────────────────────────────────────
+
+  headers:
+
+    ETag:
+      description: Opaque identifier for the current response body
+      schema:
+        type: string
+
+    LastModified:
+      description: When the resource was last changed
+      schema:
+        type: string
+        format: http-date
+
+    CacheControl:
+      description: Caching directives
+      schema:
+        type: string
+        example: "public, max-age=3600, stale-while-revalidate=60"
+
+  # ── Responses ──────────────────────────────────────────────────────────────
+
+  responses:
+
+    NotModified:
+      description: Not Modified — client's cached version is still current
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
