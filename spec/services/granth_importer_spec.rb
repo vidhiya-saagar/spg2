@@ -48,25 +48,25 @@ RSpec.describe GranthImporter, :type => :model do
 
     describe 'tuks' do
       let(:pauri) { Pauri.find_by(:number => 1, :chhand_id => 1) }
-      let(:tuk1) { Tuk.find_by(:sequence => 1, :pauri => pauri) }
-      let(:tuk2) { Tuk.find_by(:sequence => 2, :pauri => pauri) }
+      let(:first_tuk) { Tuk.find_by(:sequence => 1, :pauri => pauri) }
+      let(:second_tuk) { Tuk.find_by(:sequence => 2, :pauri => pauri) }
 
       it 'creates the first `tuk` with correct `sequence` and `content`' do
-        expect(tuk1).not_to be_nil
-        expect(tuk1.content).to eq('ਏਕੁੰਕਾਰਾ ਸਤਿਗੁਰੂ ਤਿਹਿ ਪ੍ਰਸਾਦਿ ਸਚੁ ਹੋਇ')
-        expect(tuk1.pauri.chhand.chapter.number).to eq(1)
+        expect(first_tuk).not_to be_nil
+        expect(first_tuk.content).to eq('ਏਕੁੰਕਾਰਾ ਸਤਿਗੁਰੂ ਤਿਹਿ ਪ੍ਰਸਾਦਿ ਸਚੁ ਹੋਇ')
+        expect(first_tuk.pauri.chhand.chapter.number).to eq(1)
       end
 
       it 'creates the second `tuk` with correct `sequence` and content' do
-        expect(tuk2).not_to be_nil
-        expect(tuk2.content).to eq('ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤੇ ਵਿਘਨ ਵਿਨਾਸ਼ਨ ਸੋਇ')
-        expect(tuk2.pauri.chhand.chapter.number).to eq(1)
+        expect(second_tuk).not_to be_nil
+        expect(second_tuk.content).to eq('ਵਾਹਿਗੁਰੂ ਜੀ ਕੀ ਫਤੇ ਵਿਘਨ ਵਿਨਾਸ਼ਨ ਸੋਇ')
+        expect(second_tuk.pauri.chhand.chapter.number).to eq(1)
       end
 
       it 'creates `tuk_footnotes`' do
         expect(TukFootnote.count).to eq(2)
-        expect(tuk1.footnote.bhai_vir_singh_footnote).to include('¹ਇਹ ਪਾਠ ਛਪੇ ਹੋਏ ਨੁਸਖੇ ਦਾ ਹੈ,')
-        expect(tuk2.footnote.bhai_vir_singh_footnote).to include('¹ਛਪੇ ਹੋਏ ਅਕਸਰ ਨੁਸਖਿਆਂ ਵਿਚ ਅਤੇ ਦੋ ਕਲਮੀ')
+        expect(first_tuk.footnote.bhai_vir_singh_footnote).to include('¹ਇਹ ਪਾਠ ਛਪੇ ਹੋਏ ਨੁਸਖੇ ਦਾ ਹੈ,')
+        expect(second_tuk.footnote.bhai_vir_singh_footnote).to include('¹ਛਪੇ ਹੋਏ ਅਕਸਰ ਨੁਸਖਿਆਂ ਵਿਚ ਅਤੇ ਦੋ ਕਲਮੀ')
       end
     end
   end
