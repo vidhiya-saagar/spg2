@@ -5,6 +5,10 @@ set -e
 # This is a fast no-op when nothing in the Gemfile has changed.
 bundle install
 
+# Create the database if it doesn't exist, run any pending migrations if it does.
+# Safe to run on every boot — no-ops when the schema is already up to date.
+bin/rails db:prepare
+
 # A stale PID file left by a previously crashed container will prevent
 # Puma from starting. Remove it proactively before every boot.
 rm -f tmp/pids/server.pid
