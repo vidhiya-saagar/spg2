@@ -1,0 +1,22 @@
+# This file was generated to track pre-existing Rubocop violations that existed
+# before the http-rest-standards-and-openapi PR. These should be fixed separately,
+# not as part of unrelated PRs.
+#
+# Run `bundle exec rubocop --auto-gen-config` to regenerate.
+
+Bundler/OrderedGems:
+  Exclude:
+    - 'Gemfile'
+
+Rails/ThreeStateBooleanColumn:
+  Exclude:
+    - 'db/migrate/20230611172633_add_soundcloud_playlist_support_to_katha.rb'
+
+RSpec/IndexedLet:
+  Exclude:
+    - 'spec/models/chapter_spec.rb'
+    - 'spec/services/granth_importer_spec.rb'
+
+Rails/RootPathnameMethods:
+  Exclude:
+    - 'spec/rails_helper.rb'
