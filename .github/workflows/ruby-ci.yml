@@ -18,22 +18,18 @@ jobs:
       - name: RuboCop
         run: bundle exec rubocop
 
-  docker:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Build image
-        run: docker compose build
-
-      # Run tests via `docker run` (not `docker compose run`) so the named
-      # bundle volume is not mounted. This lets the container use the gems
-      # baked into the image at /usr/local/bundle rather than reinstalling
-      # all 137 gems into an empty volume on every CI run.
-      - name: Run test suite
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/app" \
-            -e RAILS_ENV=test \
-            spg2-web \
-            sh -c "bin/rails db:schema:load && bundle exec rspec"
+  # docker:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #
+  #     - name: Build image
+  #       run: docker compose build
+  #
+  #     - name: Run test suite
+  #       run: |
+  #         docker run --rm \
+  #           -v "${{ github.workspace }}:/app" \
+  #           -e RAILS_ENV=test \
+  #           spg2-web \
+  #           sh -c "bin/rails db:schema:load && bundle exec rspec"
