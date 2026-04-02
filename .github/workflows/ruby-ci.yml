@@ -34,5 +34,6 @@ jobs:
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/app" \
+            -e RAILS_ENV=test \
             spg2-web \
-            bundle exec rspec
+            sh -c "bin/rails db:schema:load && bundle exec rspec"
