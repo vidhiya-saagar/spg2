@@ -32,9 +32,8 @@ RUN apk add --no-cache \
       yaml-dev \
       nodejs \
       tzdata \
-      bash
-
-RUN gem install bundler:${BUNDLER_VERSION} --no-document
+      bash && \
+    gem install bundler:${BUNDLER_VERSION} --no-document
 
 WORKDIR /app
 

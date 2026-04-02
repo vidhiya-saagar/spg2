@@ -1,0 +1,6 @@
+ignore:
+  # DL3018: Pin versions in apk add.
+  # Alpine Linux does not maintain stable package versions across releases,
+  # making pinning impractical to maintain. We pin the Ruby and Bundler
+  # versions via the FROM tag and ARG instead.
+  - DL3018
