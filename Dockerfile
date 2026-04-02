@@ -27,7 +27,9 @@ ARG BUNDLER_VERSION
 # bash        – required by bin/docker-entrypoint and bin/ wrappers
 RUN apk add --no-cache \
       build-base \
+      linux-headers \
       sqlite-dev \
+      yaml-dev \
       nodejs \
       tzdata \
       bash
