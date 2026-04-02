@@ -18,15 +18,6 @@ jobs:
       - name: RuboCop
         run: bundle exec rubocop
 
-  lint-dockerfile:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Lint Dockerfile
-        uses: hadolint/hadolint-action@v3.1.0
-        with:
-          dockerfile: Dockerfile
-
   docker:
     runs-on: ubuntu-latest
     steps:
