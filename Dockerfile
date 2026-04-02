@@ -54,6 +54,9 @@ RUN bundle install --jobs 4
 COPY bin/docker-entrypoint /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 
+HEALTHCHECK --interval=10s --timeout=5s --start-period=40s --retries=5 \
+  CMD wget -qO- http://localhost:1843/up || exit 1
+
 ENTRYPOINT ["docker-entrypoint"]
 CMD ["bin/rails", "server", "-b", "0.0.0.0", "-p", "1843"]
 

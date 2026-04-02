@@ -7,18 +7,59 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  rubocop:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4.5
-      - name: Install dependencies
-        run: |
-          gem install bundler
-          bundle install
-      - name: Rubocop
+          bundler-cache: true
+      - name: RuboCop
         run: bundle exec rubocop
+
+  lint-dockerfile:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint Dockerfile
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker compose build
+
+      - name: Start container
+        run: docker compose up -d
+
+      - name: Wait for health check
+        run: |
+          echo "Waiting for container to be healthy..."
+          for i in $(seq 1 30); do
+            status=$(docker inspect --format='{{.State.Health.Status}}' spg2-web-1 2>/dev/null || echo "starting")
+            echo "  attempt $i: $status"
+            if [ "$status" = "healthy" ]; then
+              echo "Container is healthy."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Container did not become healthy in time."
+          docker compose logs
+          exit 1
+
+      - name: Verify HTTP response
+        run: curl -f http://localhost:1843/up
+
+      - name: Run test suite
+        run: docker compose run --rm web bundle exec rspec
+
+      - name: Print logs on failure
+        if: failure()
+        run: docker compose logs
