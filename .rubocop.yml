@@ -117,6 +117,9 @@ Lint/MissingCopEnableDirective:
 RSpec/ExampleLength:
   Max: 10
 
+RSpec/IndexedLet:
+  Enabled: false
+
 Naming/MethodName:
   AllowedPatterns:
     - "^READABLE_ATTRIBUTES$"
