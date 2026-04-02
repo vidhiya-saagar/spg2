@@ -33,18 +33,18 @@ RSpec.describe 'Chapter' do
   end
 
   context 'with duplicate chapter numbers' do
-    let(:book1) { create(:book, :sequence => 1) }
-    let(:book2) { create(:book, :sequence => 2) }
+    let(:first_book) { create(:book, :sequence => 1) }
+    let(:other_book) { create(:book, :sequence => 2) }
 
     it 'saves for different books' do
-      create(:chapter, :book => book1, :number => 1)
-      expect(create(:chapter, :book => book2, :number => 1)).to be_truthy
+      create(:chapter, :book => first_book, :number => 1)
+      expect(create(:chapter, :book => other_book, :number => 1)).to be_truthy
     end
 
     it 'cannot save for same book' do
-      create(:chapter, :book => book1, :number => 1)
+      create(:chapter, :book => first_book, :number => 1)
       # Attempt to create a second chapter with the same number for the same book
-      expect { create(:chapter, :book => book1, :number => 1) }.to raise_error(ActiveRecord::RecordNotUnique)
+      expect { create(:chapter, :book => first_book, :number => 1) }.to raise_error(ActiveRecord::RecordNotUnique)
     end
   end
 end
