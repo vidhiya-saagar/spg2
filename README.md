@@ -11,6 +11,35 @@ The most important thing you will find in here, is:
 
 ## Getting Started
 
+### Docker (Recommended)
+
+No need to install Ruby, Bundler, or SQLite locally. Requires
+[Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+```bash
+# Clone and start the server
+git clone <repo>
+cd spg2
+docker compose up --build     # http://localhost:1843
+```
+
+**Common commands:**
+
+```bash
+docker compose up                                  # start dev server
+docker compose run --rm web bin/rails console      # Rails console
+docker compose run --rm web bundle exec rspec      # run tests
+docker compose run --rm web bin/rails db:migrate   # run migrations
+docker compose run --rm web bin/rails db:seed      # seed the database
+docker compose run --rm web bundle install         # install new gems after editing Gemfile
+```
+
+Source code is bind-mounted into the container, so file changes are reflected
+immediately without a rebuild. Gems are cached in a named Docker volume and
+persist across restarts.
+
+### Local Setup (Alternative)
+
 ### Prerequisites
 
 - Ruby 3.4.5
