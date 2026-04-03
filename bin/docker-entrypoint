@@ -5,9 +5,15 @@ set -e
 # This is a fast no-op when nothing in the Gemfile has changed.
 bundle install
 
-# Create the database if it doesn't exist, run any pending migrations if it does.
-# Safe to run on every boot — no-ops when the schema is already up to date.
-bin/rails db:prepare
+# In test mode (CI), create a clean schema-only DB — no seeds.
+# In development, db:prepare creates the DB if missing and runs migrations.
+if [ "${RAILS_ENV}" = "test" ]; then
+  # Always start with a clean schema — drop any existing test DB so stale
+  # seeded data doesn't cause uniqueness failures in specs.
+  bin/rails db:drop db:create db:schema:load
+else
+  bin/rails db:prepare
+fi
 
 # A stale PID file left by a previously crashed container will prevent
 # Puma from starting. Remove it proactively before every boot.

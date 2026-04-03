@@ -23,13 +23,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Build image
-      #   run: docker compose build
+      - name: Build image
+        run: docker compose build
 
+      # Run via `docker run` (not `docker compose run`) so the named bundle
+      # volume is not mounted — tests use gems baked into the image instead
+      # of reinstalling 137 gems into an empty volume on every CI run.
+      # The entrypoint handles db:drop db:create db:schema:load for RAILS_ENV=test.
       - name: Run test suite
         run: |
           docker run --rm \
             -v "${{ github.workspace }}:/app" \
             -e RAILS_ENV=test \
             spg2-web \
-            sh -c "bin/rails db:schema:load && bundle exec rspec"
+            bundle exec rspec
