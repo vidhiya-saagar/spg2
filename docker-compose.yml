@@ -1,0 +1,63 @@
+# Development compose file.
+#
+# ── Everyday commands ─────────────────────────────────────────────────────────
+#
+#   docker compose up                                  # start server → http://localhost:1843
+#   docker compose up --build                          # rebuild image first, then start
+#   docker compose down                                # stop and remove containers
+#
+#   docker compose run --rm web bin/rails console      # Rails console
+#   docker compose run --rm web bin/rails db:migrate   # run pending migrations
+#   docker compose run --rm web bin/rails db:seed      # seed the database
+#   docker compose run --rm web bin/rails routes       # print route table
+#
+#   docker compose run --rm test bundle exec rspec                  # full test suite
+#   docker compose run --rm test bundle exec rspec spec/models/     # specific path
+#
+# ── Adding / updating gems ────────────────────────────────────────────────────
+#
+#   # 1. Edit Gemfile, then:
+#   docker compose run --rm web bundle install
+#   # The entrypoint also runs `bundle install` automatically on every start,
+#   # so a plain `docker compose up` will pick up new gems without a rebuild.
+#
+# ── Notes ─────────────────────────────────────────────────────────────────────
+#
+#   Source code is bind-mounted (.:/app), so every file save is reflected
+#   immediately inside the container — no rebuild required for code changes.
+#
+#   Gems are stored in a named volume (bundle:/usr/local/bundle) that lives
+#   outside the bind mount, so they survive restarts and won't be shadowed
+#   by a local vendor/ directory.
+
+services:
+  web:
+    build:
+      context: .
+      target: development
+    image: spg2-web
+    ports:
+      - "1843:1843"
+    volumes:
+      - .:/app
+      - bundle:/usr/local/bundle
+    environment:
+      RAILS_ENV: development
+    stdin_open: true
+    tty: true
+
+  test:
+    build:
+      context: .
+      target: development
+    image: spg2-web
+    volumes:
+      - .:/app
+      - bundle:/usr/local/bundle
+    environment:
+      RAILS_ENV: test
+    stdin_open: true
+    tty: true
+
+volumes:
+  bundle:

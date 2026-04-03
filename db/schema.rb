@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_02_14_064320) do
+ActiveRecord::Schema[8.0].define(version: 2024_02_14_064320) do
   create_table "books", force: :cascade do |t|
     t.integer "sequence", null: false
     t.string "title", null: false
@@ -94,7 +94,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_14_064320) do
     t.integer "year"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.boolean "is_playlist", default: false
+    t.boolean "is_playlist", default: false, null: false
     t.index ["giani_id"], name: "index_kathas_on_giani_id"
   end
 
@@ -118,7 +118,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_02_14_064320) do
   end
 
   create_table "pauris", force: :cascade do |t|
-    t.integer "number"
+    t.integer "number", null: false
     t.integer "chapter_id", null: false
     t.integer "chhand_id", null: false
     t.datetime "created_at", null: false

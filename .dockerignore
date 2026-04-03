@@ -1,5 +1,27 @@
-node_modules
-tmp
-vendor
-log
+# Version control
 .git
+.gitignore
+
+# Logs and temp files (re-created at runtime)
+log/*
+tmp/*
+
+# Test and coverage artefacts
+coverage/
+spec/reports/
+
+# Local gem installs (we use /usr/local/bundle in the container)
+vendor/bundle
+
+# Editor / OS noise
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# CI config (not needed in the image)
+.github/
+
+# Compiled assets (regenerated during production build stage)
+public/assets
+public/packs

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -e
+
+# Install any gems added since the image was last built.
+# This is a fast no-op when nothing in the Gemfile has changed.
+bundle install
+
+# In test mode (CI), create a clean schema-only DB — no seeds.
+# In development, db:prepare creates the DB if missing and runs migrations.
+if [ "${RAILS_ENV}" = "test" ]; then
+  # Always start with a clean schema — drop any existing test DB so stale
+  # seeded data doesn't cause uniqueness failures in specs.
+  bin/rails db:drop db:create db:schema:load
+else
+  bin/rails db:prepare
+fi
+
+# A stale PID file left by a previously crashed container will prevent
+# Puma from starting. Remove it proactively before every boot.
+rm -f tmp/pids/server.pid
+
+exec "$@"

@@ -9,6 +9,7 @@ AllCops:
   Exclude:
     - db/schema.rb
     - config/**/*
+    - vendor/**/*
 
 Bundler/DuplicatedGem:
   Enabled: false
