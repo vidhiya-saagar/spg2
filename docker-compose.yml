@@ -10,8 +10,9 @@
 #   docker compose run --rm web bin/rails db:migrate   # run pending migrations
 #   docker compose run --rm web bin/rails db:seed      # seed the database
 #   docker compose run --rm web bin/rails routes       # print route table
-#   docker compose run --rm web bundle exec rspec      # full test suite
-#   docker compose run --rm web bundle exec rspec spec/models/  # specific path
+#
+#   docker compose run --rm test bundle exec rspec                  # full test suite
+#   docker compose run --rm test bundle exec rspec spec/models/     # specific path
 #
 # ── Adding / updating gems ────────────────────────────────────────────────────
 #
@@ -38,13 +39,23 @@ services:
     ports:
       - "1843:1843"
     volumes:
-      # Live code: edits on the host are immediately visible in the container.
       - .:/app
-      # Gem cache: persists across restarts; bundle install writes here.
       - bundle:/usr/local/bundle
     environment:
       RAILS_ENV: development
-    # Keep stdin/tty open so debugger / binding.pry are interactive.
+    stdin_open: true
+    tty: true
+
+  test:
+    build:
+      context: .
+      target: development
+    image: spg2-web
+    volumes:
+      - .:/app
+      - bundle:/usr/local/bundle
+    environment:
+      RAILS_ENV: test
     stdin_open: true
     tty: true
 

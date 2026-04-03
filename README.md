@@ -26,12 +26,23 @@ docker compose up --build     # http://localhost:1843
 **Common commands:**
 
 ```bash
-docker compose up                                  # start dev server
-docker compose run --rm web bin/rails console      # Rails console
-docker compose run --rm web bundle exec rspec      # run tests
-docker compose run --rm web bin/rails db:migrate   # run migrations
-docker compose run --rm web bin/rails db:seed      # seed the database
-docker compose run --rm web bundle install         # install new gems after editing Gemfile
+# Server
+docker compose up                                        # start dev server → http://localhost:1843
+docker compose up --build                                # rebuild image first, then start
+docker compose down                                      # stop and remove containers
+
+# Development
+docker compose run --rm web bin/rails console            # Rails console
+docker compose run --rm web bin/rails db:migrate         # run pending migrations
+docker compose run --rm web bin/rails db:seed            # seed the database
+docker compose run --rm web bin/rails routes             # print route table
+
+# Testing (uses a clean schema-only DB — no seeds)
+docker compose run --rm test bundle exec rspec           # full test suite
+docker compose run --rm test bundle exec rspec spec/models/  # specific path
+
+# Gems
+docker compose run --rm web bundle install               # install new gems after editing Gemfile
 ```
 
 Source code is bind-mounted into the container, so file changes are reflected
@@ -136,12 +147,5 @@ applications globally.
    ```
    flyctl deploy
    ```
-
-### Important Note
-
-The production database for this application is configured to use
-`development.sqlite`. Therefore, the behavior of the application in the
-production environment will be identical to its behavior in the development
-environment.
 
 ---
