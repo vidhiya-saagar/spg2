@@ -30,7 +30,6 @@ RUN apk add --no-cache \
       linux-headers \
       sqlite-dev \
       yaml-dev \
-      nodejs \
       tzdata \
       bash && \
     gem install bundler:${BUNDLER_VERSION} --no-document
@@ -81,7 +80,6 @@ FROM ruby:${RUBY_VERSION}-alpine AS production
 # Runtime-only: no build-base, no header packages.
 RUN apk add --no-cache \
       sqlite-libs \
-      nodejs \
       tzdata \
       bash
 
